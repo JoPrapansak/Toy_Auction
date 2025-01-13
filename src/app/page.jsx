@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div >
       <Nav></Nav>
-      <div>Hello</div>
+      <div>หมวดหมู่สินค้า </div>
     </div>
   );
 }
