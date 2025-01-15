@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 
 import Link from 'next/link'
@@ -7,11 +9,12 @@ function Nav() {
     <div>
       <header className="bg-red-600 text-white py-3">
         <div className="container mx-auto flex justify-between items-center">
-          <div className="flex-1 flex justify-center">
+          <h1 className="text-xl font-bold">Toy Auction</h1>
+          <div className="flex-1 flex justify-center items-center">
             <input
               type="text"
               placeholder="ค้นหาสินค้า"
-              className="px-20 py-2 rounded-md text-black"
+              className="w-1/3 p-2 rounded"
             />
           </div>
           <div className="space-x-4">
@@ -23,17 +26,18 @@ function Nav() {
             </Link>
           </div>
         </div>
+        
       </header>
       <header className="bg-red-600 text-white py-3">
         <div className="container mx-auto flex justify-center items-center">
-          <div className="space-x-6">
+          <div className="space-x-10 items-center">
             <Link href="/" className="hover:underline">
               หน้าแรก
             </Link>
             <Link href="/product" className="hover:underline">
               สินค้าประมูล
             </Link>
-            <Link href="/asked" className="hover:underline">
+            <Link href="/productcategories" className="hover:underline">
               คำถามที่พบบ่อย
             </Link>
             <Link href="/about" className="hover:underline">
