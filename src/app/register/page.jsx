@@ -67,60 +67,63 @@ function RegisterPage() {
   return (
     <div>
       <Navbar/>
-      <div className='container mx-auto py-5 items-center justify-center'>
-        <h3>สมัครสมาชิก</h3>
-        <form onSubmit={handleSubmit}>
+      <main className="flex items-center justify-center py-16">
+        <div className='w-full max-w-md bg-gray-100 p-8 rounded-lg shadow-md'>
+          <h2 className="text-2xl font-semibold text-center mb-6">สมัครสมาชิก</h2>
+          <form onSubmit={handleSubmit}>
 
-          {error && (
-            <div className='bg-red-500 text-white p-2 my-2 rounded-md'>
-              {error}
+            {error && (
+              <div className='bg-red-500 text-white p-2 my-2 rounded-md'>
+                {error}
+              </div>
+            )}
+
+            <input onChange={(e)  => setName(e.target.value)} className='w-full px-4 py-2 border rounded-md mb-4' type="text" placeholder='ชื่อName' />
+            <input onChange={(e)  => setEmail(e.target.value)} className='w-full px-4 py-2 border rounded-md mb-4' type="email" placeholder='อีเมลEmail' />
+            
+            <div className='relative mb-4'>
+              <input 
+                onChange={(e)  => setPassword(e.target.value)} 
+                className='w-full px-4 py-2 border rounded-md' 
+                type={showPassword ? "text" : "password"} 
+                placeholder='Password' 
+              />
+              <button 
+                type="button" 
+                className='absolute right-2 top-3 text-sm text-gray-600'
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "ซ่อน" : "ดู"}
+              </button>
             </div>
-          )}
 
-          <input onChange={(e)  => setName(e.target.value)} className='block bg-gray--300 p-2 my-2 rounded-md' type="text" placeholder='ชื่อName' />
-          <input onChange={(e)  => setEmail(e.target.value)} className='block bg-gray--300 p-2 my-2 rounded-md' type="email" placeholder='อีเมลEmail' />
-          
-          <div className='relative'>
-            <input 
-              onChange={(e)  => setPassword(e.target.value)} 
-              className='block bg-gray--300 p-2 my-2 rounded-md w-full' 
-              type={showPassword ? "text" : "password"} 
-              placeholder='รหัสผ่านPassword' 
-            />
-            <button 
-              type="button" 
-              className='absolute right-2 top-3 text-sm text-gray-600'
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? "ซ่อน" : "ดู"}
-            </button>
-          </div>
+            <div className='relative mb-4'>
+              <input 
+                onChange={(e)  => setConfirmpassword(e.target.value)} 
+                className='w-full px-4 py-2 border rounded-md' 
+                type={showConfirmPassword ? "text" : "password"} 
+                placeholder='Confirmpassword' 
+              />
+              <button 
+                type="button" 
+                className='absolute right-2 top-3 text-sm text-gray-600'
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? "ซ่อน" : "ดู"}
+              </button>
+            </div>
 
-          <div className='relative'>
-            <input 
-              onChange={(e)  => setConfirmpassword(e.target.value)} 
-              className='block bg-gray--300 p-2 my-2 rounded-md w-full' 
-              type={showConfirmPassword ? "text" : "password"} 
-              placeholder='ยืนยันรหัสผ่านConfirmpassword' 
-            />
-            <button 
-              type="button" 
-              className='absolute right-2 top-3 text-sm text-gray-600'
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? "ซ่อน" : "ดู"}
-            </button>
-          </div>
+            <input onChange={(e)  => setPhone(e.target.value)} className='w-full px-4 py-2 border rounded-md mb-6' type="tel" placeholder='เบอร์โทรTel.' />
+            <button
+                type="submit"
+                className="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700"
+              >
+                สมัครสมาชิก
+              </button>
+          </form>
+        </div>
 
-          <input onChange={(e)  => setPhone(e.target.value)} className='block bg-gray--300 p-2 my-2 rounded-md' type="tel" placeholder='เบอร์โทรTel.' />
-          <button
-              type="submit"
-              className="bg-red-600 text-white py-2 rounded-md hover:bg-red-700"
-            >
-              สมัครสมาชิก
-            </button>
-        </form>
-      </div>
+      </main>
     </div>
   )
 }

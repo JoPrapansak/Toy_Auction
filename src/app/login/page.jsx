@@ -3,6 +3,7 @@
 import React from 'react'
 import Nav from '../components/Nav'
 import Link from 'next/link'
+import Navbar from '../components/Navbar'
 
 function LoginPage() {
   const [email, setEmail] = React.useState('')
@@ -32,7 +33,7 @@ function LoginPage() {
   }
   return (
     <div>
-      <Nav/>
+      <Navbar/>
       <main className="flex items-center justify-center py-16">
         <div className="w-full max-w-md bg-gray-100 p-8 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold text-center mb-6">เข้าสู่ระบบ</h2>
