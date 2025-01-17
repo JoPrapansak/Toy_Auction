@@ -1,5 +1,8 @@
+'use client'
+
 import React from 'react'
 import Link from 'next/link'
+
 
 function Navbar() {
   return (
@@ -19,8 +22,8 @@ function Navbar() {
                     />
                 </div>
                 <ul className='flex'>
-                    <li className='ms-3'><Link href="/login">ล็อคอิน</Link></li>
                     <li className='ms-3'><Link href="/register">สมัครสมาชิก</Link></li>
+                    <li className='ms-3'><Link href="/login">ล็อคอิน</Link></li>
                 </ul>
             </div>
         </div>
@@ -31,8 +34,8 @@ function Navbar() {
                 <ul className='flex space-x-10'>
                     <li className='ms-3'><Link href="/">หน้าหลัก</Link></li>
                     <li className='ms-3'><Link href="/product">สินค้าประมูล</Link></li>
-                    <li className='ms-3'><Link href="/asked"></Link>คำถามที่พบบ่อย</li>
-                    <li className='ms-3'><Link href="/about"></Link>เกี่ยวกับเรา</li>
+                    <li className='ms-3'><Link href="/asked">คำถามที่พบบ่อย</Link></li>
+                    <li className='ms-3'><Link href="/about">เกี่ยวกับเรา</Link></li>
                 </ul>
             </div>
             
