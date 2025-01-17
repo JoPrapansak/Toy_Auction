@@ -13,6 +13,7 @@ function RegisterPage() {
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,6 +55,7 @@ function RegisterPage() {
 
       if (!res.ok) {
         setError(data.message || "An error occurred during registration.");
+        setSuccess('registration successfully ');
         return;
       }
 
@@ -75,6 +77,12 @@ function RegisterPage() {
             {error && (
               <div className='bg-red-500 text-white p-2 my-2 rounded-md'>
                 {error}
+              </div>
+            )}
+
+            {success && (
+              <div className='bg-green-500 text-white p-2 my-2 rounded-md'>
+                {success}
               </div>
             )}
 
