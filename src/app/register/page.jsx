@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react'
 import Navbar from '../components/Navbar'
+import { useSession } from 'next-auth/react'
+import { redirect } from 'next/navigation'
 
 function RegisterPage() {
 
@@ -14,6 +16,9 @@ function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [success, setSuccess] = useState('');
+
+  const { data: session } = useSession();
+  if (session) redirect("/");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -130,7 +135,6 @@ function RegisterPage() {
               </button>
           </form>
         </div>
-
       </main>
     </div>
   )

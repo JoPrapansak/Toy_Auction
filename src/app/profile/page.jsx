@@ -1,16 +1,15 @@
+
+
 import React from 'react'
-import Nav from '../components/Nav'
-// import
 import Navbar from '../components/Navbar'
 
-
-function ProductPage() {
+function page() {
   return (
     <div>
       <Navbar/>
-      Product
+      โปรไฟล์
     </div>
   )
 }
 
-export default ProductPage
+export default page() 

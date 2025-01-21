@@ -20,13 +20,19 @@ const Slideimage = () => {
   }, []);
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      (prevIndex - 1 + images.length) % images.length
-    ); // Loop back to last image
+    if (currentIndex > 0) {
+      setCurrentIndex((prevIndex) => prevIndex - 1);
+    } else {
+      setCurrentIndex(images.length - 2); // กลับไปที่ภาพสุดท้ายเมื่อถึงภาพแรก
+    }
   };
 
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length); // Loop back to first image
+    if (currentIndex < images.length - 1) {
+      setCurrentIndex((prevIndex) => prevIndex + 1);
+    } else {
+      setCurrentIndex(0); // กลับไปที่ภาพแรกเมื่อถึงภาพสุดท้าย
+    }
   };
 
   return (

@@ -5,6 +5,7 @@ function Askedpage() {
   return (
     
     <div>
+      <Navbar/>
       asked
     </div>
   )

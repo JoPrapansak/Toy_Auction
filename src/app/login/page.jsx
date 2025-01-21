@@ -4,11 +4,24 @@ import React from 'react'
 import Nav from '../components/Nav'
 import Link from 'next/link'
 import Navbar from '../components/Navbar'
+import { signIn } from 'next-auth/react'
+import  {useRouter} from 'next/navigation'
+import {useSession} from 'next-auth/react'
+import { redirect } from 'next/navigation'
+import HomePage from '../home/page'
+
 
 function LoginPage() {
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [error, setError] = React.useState('')
+
+  const router = useRouter()
+
+  const {data: session} = useSession()
+  if(session){
+    router.replace('/')
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +36,7 @@ function LoginPage() {
         body: JSON.stringify({ email, password }),
       })
       if (res.status === 200) {
-        window.location.href = '/'
+        window.location.href = '/home'
       } else {
         throw new Error(await res.text())
       }
