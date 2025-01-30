@@ -12,8 +12,8 @@ function Navbar({ session }) {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('https://nodejs-for-test-vua7.onrender.com/api/v1/auth/logout', {
-        method: 'POST', // หรือ 'GET' ขึ้นอยู่กับ backend ของคุณ
+      const res = await fetch('http://localhost:3111/api/v1/auth/logout', {
+        method: 'POST',
         credentials: 'include', // ส่ง cookies ไปกับ request
         headers: {
           'Content-Type': 'application/json',
@@ -22,12 +22,12 @@ function Navbar({ session }) {
         },
       });
 
-      if (response.ok) {
+      if (res.status === 200) {
         console.log('Logged out successfully');
         // ลบ session หรือรีเฟรชหน้า
-        window.location.href = '/login';
+        window.location.href = '/';
       } else {
-        console.error('Failed to log out:', response.status);
+        console.error('Failed to log out:', res.status);
       }
     } catch (error) {
       console.error('Error logging out:', error);
