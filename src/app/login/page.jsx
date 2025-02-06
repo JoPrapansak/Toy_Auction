@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 
 import Link from 'next/link'
 import Navbar from '../components/Navbar'
@@ -15,6 +17,7 @@ function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const router = useRouter()
   
@@ -27,8 +30,9 @@ function LoginPage() {
     e.preventDefault();
     
     try {
-      const res = await fetch('https://nodejs-for-test-vua7.onrender.com/api/v1/auth/login', {
+      const res = await fetch('http://localhost:3111/api/v1/auth/login', {
         method: 'POST',
+        credentials: "include", // ✅ ต้องเปิดให้ Cookies ถูกแนบไปด้วย
         headers: {
           'Content-Type': 'application/json',
           "BusinessId": "1234567890",
@@ -37,7 +41,7 @@ function LoginPage() {
         body: JSON.stringify({ email, password }),
       })
       if (res.status === 200) {
-        window.location.href = '/home'
+        window.location.href = '/homeuser'
       } else {
         throw new Error(await res.text())
       }
@@ -65,14 +69,24 @@ function LoginPage() {
                 placeholder="Email"
                 />
             </div>
-            <div className="mb-6">
+            <div className="mb-6 relative">
               <input
                 onChange={(e) => setPassword(e.target.value)}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 className="w-full px-4 py-2 border rounded-md"
                 placeholder="Password"
                 />
+              <button 
+                type="button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <FontAwesomeIcon 
+                  icon={showPassword ? faEyeSlash : faEye} 
+                  className="h-5 w-5"
+                />
+              </button>
             </div>
             <button
               type="submit"
@@ -121,4 +135,3 @@ export default LoginPage
 // }
 
 // export default loginPage
-
