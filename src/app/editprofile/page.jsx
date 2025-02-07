@@ -52,14 +52,14 @@ function EditProfilePage() {
                 />
               </div>
               
-              <div>
+              {/* <div>
                 <label className="block text-gray-700 mb-2">อีเมล</label>
                 <input 
                   type="email"
                   className="w-full p-2 border rounded-lg focus:outline-none focus:border-blue-500"
                   placeholder="อีเมล"
                 />
-              </div>
+              </div> */}
 
               {/* <div>
                 <label className="block text-gray-700 mb-2">ชื่อ-นามสกุล</label>
