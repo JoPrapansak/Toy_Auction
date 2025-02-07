@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Navbar from '../components/Navbar'
-import NavUser from '../components/์NavUser';
+import NavUser from '../components/NavUser';
 import ImageSlider from '../components/ImageSlider';
 import Product from '../product/page';
 import { useSession } from 'next-auth/react'

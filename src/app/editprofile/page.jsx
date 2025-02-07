@@ -3,7 +3,7 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
 import { useRouter } from 'next/navigation'
-import NavUser from '../components/์NavUser'
+import NavUser from '../components/NavUser'
 
 function EditProfilePage() {
   const router = useRouter()

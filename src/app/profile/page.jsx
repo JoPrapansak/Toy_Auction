@@ -1,7 +1,7 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
 import Link from 'next/link'
-import NavUser from '../components/์NavUser'
+import NavUser from '../components/NavUser'
 
 function ProfilePage() {
   return (
