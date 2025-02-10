@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Navbar from "./components/Navbar";
 import HomePage from "./home/page";
-import NavUser from "./components/์NavUser";
+import NavUser from "./components/NavUser";
 
 
 // const images = [

@@ -1,4 +1,4 @@
-"use client"; // ✅ ต้องใส่สำหรับ Client Component
+"use client";
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation"; // ✅ ใช้ next/navigation

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
-function NavUser({ session }) {
+function NavUser() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
 
@@ -96,7 +96,7 @@ function NavUser({ session }) {
           <div className='flex justify-center items-center'>
             <ul className='flex space-x-10'>
               <li className='ms-3'><Link href="/homeuser">หน้าหลัก</Link></li>
-              <li className='ms-3'><Link href="/productdt">สินค้าประมูล</Link></li>
+              <li className='ms-3'><Link href="/productuser">สินค้าประมูล</Link></li>
               <li className='ms-3'><Link href="/asked">คำถามที่พบบ่อย</Link></li>
               <li className='ms-3'><Link href="/about">เกี่ยวกับเรา</Link></li>
             </ul>

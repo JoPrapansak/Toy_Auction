@@ -46,7 +46,7 @@ function ProductDetailsPage() {
               </div>
               <div className="flex justify-between items-center mt-4">
                 <span className="text-gray-600">ราคาปัจจุบัน</span>
-                <span className="text-2xl font-bold text-green-600">1,500 บาท</span>
+                <span className="text-2xl font-bold text-green-600">1500 บาท</span>
               </div>
               <div className="flex justify-between items-center mt-4">
                 <span className="text-gray-600">เวลาที่เหลือ</span>

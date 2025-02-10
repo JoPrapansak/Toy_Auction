@@ -2,7 +2,9 @@
 
 import React from 'react'
 import Navbar from '../components/Navbar';
-import Product from '../product/page';
+// import Product from '../products/page';
+import Product from '../components/Productuser'
+import NavUser from '../components/NavUser';
 
 // const products = [
 //     { id: 1, name: 'Bandai กันพลา กันดั้ม RG 1/144 GUNDAM EXIA', image: '/image/Product1.png', price: 1200},
@@ -11,13 +13,13 @@ import Product from '../product/page';
 //     { id: 4, name: 'Joker นั่ง Mafex Action Figure ทีมฆ่าตัวตาย Joker Supervillain', image: '/image/Product4.jpg', price: 800},
 // ]
 
-function productdt() {
+function productuser() {
   return (
     <div>
-      <Navbar/>
+      <NavUser/>
       <Product/>
     </div>
   )
 }
 
-export default productdt
+export default productuser

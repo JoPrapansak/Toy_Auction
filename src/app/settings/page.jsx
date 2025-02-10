@@ -34,15 +34,15 @@ function Settingpage() {
       case 'location':
         return (
           <div className="bg-white rounded-lg p-6 shadow">
-            <h2 className="text-xl font-semibold mb-4">ตำแหน่งการเข้าระบบ</h2>
+            <h2 className="text-xl font-semibold mb-4">ตำแหน่งที่คุณเข้าระบบ</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">ตำแหน่งปัจจุบัน</label>
                 <input type="text" className="w-full p-2 border rounded" placeholder="กรุงเทพมหานคร, ประเทศไทย" disabled />
               </div>
-              <p className="text-sm text-gray-600">
+              {/* <p className="text-sm text-gray-600">
                 ตำแหน่งนี้จะถูกใช้เพื่อความปลอดภัยในการเข้าสู่ระบบของคุณ
-              </p>
+              </p> */}
             </div>
           </div>
         )
@@ -79,13 +79,13 @@ function Settingpage() {
                     : 'hover:bg-gray-100'
                 }`}
               >
-                ตำแหน่งการเข้าระบบ
+                ตำแหน่งที่คุณเข้าระบบ
               </button>
             </div>
           </div>
 
           {/* Right Content Area */}
-          <div className="md:col-span-3">
+          <div className="md:col-span-1 max-w-xl">
             {renderContent()}
           </div>
         </div>
