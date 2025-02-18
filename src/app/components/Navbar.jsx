@@ -59,10 +59,10 @@ function Navbar() {
         <div className='container mx-auto'>
           <div className='flex justify-center items-center'>
             <ul className='flex space-x-10'>
-              <li className='ms-3'><Link href="/home">หน้าหลัก</Link></li>
+              <li className='ms-3'><Link href="/">หน้าหลัก</Link></li>
               <li className='ms-3'><Link href="/product">สินค้าประมูล</Link></li>
-              <li className='ms-3'><Link href="/asked">คำถามที่พบบ่อย</Link></li>
               <li className='ms-3'><Link href="/about">เกี่ยวกับเรา</Link></li>
+              <li className='ms-3'><Link href="/contact">ติดต่อเรา</Link></li>
             </ul>
           </div>
         </div>

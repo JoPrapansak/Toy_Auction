@@ -7,6 +7,8 @@ import ImageSlider from '../components/ImageSlider';
 // import Product from '../products/page';
 import Productuser from '../components/Productuser';
 import { useSession } from 'next-auth/react';
+import Contact from '../components/Contact';
+import NavContact from '../components/NavContact';
 
 function HomeUserpage() {
     const {data: session} = useSession()
@@ -20,6 +22,7 @@ const images = [
   return (
     <div>
       <NavUser session={session}/>
+      
         <div className='container mx-auto px-4'>
             <h3 className='text-2xl my-3'>หมวดหมู่สินค้า</h3>
             <ImageSlider images={images} />
@@ -27,7 +30,7 @@ const images = [
         <div className='container mx-auto px-4'>
             <Productuser/>
         </div>
-
+        <NavContact/>
     </div>
   )
 }

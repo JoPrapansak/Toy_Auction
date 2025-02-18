@@ -7,6 +7,7 @@ import ImageSlider from '../components/ImageSlider';
 // import Product from '../products/page';
 import Product from '../components/Product';
 import { useSession } from 'next-auth/react'
+import NavContact from '../components/NavContact';
 
 
 function HomePage() {
@@ -29,6 +30,7 @@ function HomePage() {
         <div className='container mx-auto px-4'>
             <Product/>
         </div>
+        <NavContact/>
     </div>
   )
 }
