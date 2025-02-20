@@ -3,6 +3,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
+// Add imports for icons
+import { FaCheckCircle, FaExclamationTriangle, FaBell, FaClock, FaInfo } from 'react-icons/fa'
+
 function NavUser() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
@@ -166,9 +169,15 @@ function NavUser() {
                           <div key={notification.id} className="p-4 hover:bg-gray-50 cursor-pointer">
                             <div className="flex items-start">
                               <div className="flex-shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 text-${notification.type}-500`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={notification.icon === 'check' ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' : notification.icon === 'warning' ? 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' : 'M13 10V3L4 14h7v7l9-11h-7z'} />
-                                </svg>
+                                {notification.icon === 'clock' ? (
+                                  <FaClock className="h-6 w-6 text-purple-500" />
+                                ) : notification.type === 'success' ? (
+                                  <FaCheckCircle className="h-6 w-6 text-green-500" />
+                                ) : notification.type === 'warning' ? (
+                                  <FaExclamationTriangle className="h-6 w-6 text-yellow-500" />
+                                ) : notification.type === 'info' ? (
+                                  <FaInfo className="h-6 w-6 text-blue-500" />
+                                ) : null}
                               </div>
                               <div className="ml-3">
                                 <p className="text-sm text-gray-800">{notification.message}</p>
