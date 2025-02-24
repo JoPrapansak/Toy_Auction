@@ -8,6 +8,7 @@ function CreateAuctionPage() {
     name: '',
     image: null,
     category: '', // Add category to form data
+    description: '', // Add this line
     startPrice: '',
     minBid: '',
     endDate: '',
@@ -161,6 +162,22 @@ function CreateAuctionPage() {
                 onChange={handleChange}
                 min="0"
                 className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            {/* รายละเอียดสินค้า */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                รายละเอียดสินค้า
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows="4"
+                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="กรุณากรอกรายละเอียดสินค้า"
                 required
               />
             </div>
