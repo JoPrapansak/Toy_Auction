@@ -15,7 +15,9 @@ function MyAuctionsPage() {
 
   const fetchMyAuctions = async () => {
     try {
-      const response = await fetch('http://localhost:3111/api/v1/my-auctions', {
+      const response = await fetch('http://localhost:3111/api/v1/auctions', {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
         credentials: 'include'
       })
       const data = await response.json()
