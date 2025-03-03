@@ -28,11 +28,25 @@ function LoginPage() {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear any existing errors
     
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('กรุณากรอกอีเมลให้ถูกต้อง');
+      return;
+    }
+
+    // Password validation
+    if (password.length < 6) {
+      setError('รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร');
+      return;
+    }
+
     try {
       const res = await fetch('http://localhost:3111/api/v1/auth/login', {
         method: 'POST',
-        credentials: "include", // ✅ ต้องเปิดให้ Cookies ถูกแนบไปด้วย
+        credentials: "include",
         headers: {
           'Content-Type': 'application/json',
           "BusinessId": "1234567890",
@@ -40,16 +54,18 @@ function LoginPage() {
         },
         body: JSON.stringify({ email, password }),
       })
+
       if (res.status === 200) {
         window.location.href = '/homeuser'
       } else {
-        throw new Error(await res.text())
+        const errorData = await res.json()
+        setError(errorData.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง')
       }
     } catch (error) {
-      setError(error.message)
+      setError('เกิดข้อผิดพลาดในการเข้าสู่ระบบ กรุณาลองใหม่อีกครั้ง')
     }
   }
-  
+
   return (
     <div>
       <Navbar/>
@@ -58,7 +74,12 @@ function LoginPage() {
           <h2 className="text-2xl font-semibold text-center mb-6">เข้าสู่ระบบ</h2>
           <form onSubmit={handleSubmit}>
             
-            {/* {error && <div className="text-red-500 text-sm mb-4">{error}</div>} */}
+            {/* Show error message if exists */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+                {error}
+              </div>
+            )}
 
             <div className="mb-4">
               <input
@@ -110,28 +131,3 @@ function LoginPage() {
 }
 
 export default LoginPage
-
-
-// 'use client'
-// import React from 'react'
-
-// import Nav from '../components/Nav'
-// import {login} from './action'
-// function loginPage() {
-  //   return (
-    //     <div>
-    //       <Nav/>
-//       <form action={login}>
-//         <div>
-//           Email<input type="text" name='email'/>
-//         </div>
-//         <div>
-//           Password<input type="password" name='password'/>
-//         </div>
-//         <button>Login</button>
-//       </form>
-//     </div>
-//   )
-// }
-
-// export default loginPage
