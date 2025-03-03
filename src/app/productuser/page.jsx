@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 // import Product from '../products/page';
 import Product from '../components/Productuser'
 import NavUser from '../components/NavUser';
+import NavContact from '../components/NavContact';
 
 // const products = [
 //     { id: 1, name: 'Bandai กันพลา กันดั้ม RG 1/144 GUNDAM EXIA', image: '/image/Product1.png', price: 1200},
@@ -18,6 +19,7 @@ function productuser() {
     <div>
       <NavUser/>
       <Product/>
+      <NavContact/>
     </div>
   )
 }

@@ -1,3 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Mali:wght@300;400;700&family=Itim&family=Kanit:wght@300;400;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* โค้ด CSS อื่น ๆ ต้องอยู่ข้างล่าง */
+.font-cute {
+  font-family: 'Fredoka', sans-serif;
+}
+
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */

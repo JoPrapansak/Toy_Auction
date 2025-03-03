@@ -75,7 +75,7 @@ function ProductPage() {
 
   return (
     <div className="container mx-auto px-4">
-      <h3 className="text-2xl my-3">สินค้าของฉัน</h3>
+      <h3 className="text-2xl my-3"style={{ fontFamily: "'Mali',sans-serif"}}>ประมูลสินค้า</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
         {products.map((product) => (
           <div key={product._id} className="bg-white p-4 shadow-md rounded-md">

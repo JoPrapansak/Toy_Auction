@@ -64,7 +64,7 @@ function ProductPage() {
 
   return (
     <div className="container mx-auto px-4">
-      <h3 className="text-2xl my-3">ประมูลสินค้า</h3>
+      <h3 className="text-2xl my-3"style={{ fontFamily: "'Mali',sans-serif"}}>ประมูลสินค้า</h3>
 
       {loading ? (
         <p className="text-center">กำลังโหลด...</p>

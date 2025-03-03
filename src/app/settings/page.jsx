@@ -98,13 +98,13 @@ function SettingPage() {
           </>
         )}
 
-        {activeTab === 'location' && (
+        {/* {activeTab === 'location' && (
           <>
             <h2 className="text-xl font-semibold mb-4">ตำแหน่งที่คุณเข้าระบบ</h2>
             <p className="text-gray-600 text-sm">ตำแหน่งของคุณถูกบันทึกเพื่อความปลอดภัย</p>
             <Input label="ตำแหน่งปัจจุบัน" type="text" value="กรุงเทพมหานคร, ประเทศไทย" disabled />
           </>
-        )}
+        )} */}
 
         {activeTab === 'loginHistory' && (
           <>
@@ -149,25 +149,27 @@ function SettingPage() {
         <div className="flex flex-col md:flex-row md:space-x-8">
           {/* Sidebar Menu */}
           <div className="md:w-1/4">
-            <div className="bg-white p-4 rounded-xl shadow-md">
-              {['password', 'location', 'loginHistory'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`block w-full text-left px-4 py-2 rounded-lg transition-all ${
-                    activeTab === tab ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'
-                  }`}
-                >
-                  {tab === 'password' && 'เปลี่ยนรหัสผ่าน'}
-                  {/* {tab === 'location' && 'ตำแหน่งที่คุณเข้าระบบ'} */}
-                  {tab === 'loginHistory' && 'ประวัติการเข้าสู่ระบบ'}
-                </button>
-              ))}
+            <div className="bg-white p-4 rounded-xl shadow-md"> 
+              <div className="space-y-1"> {/* เพิ่ม div ครอบปุ่มและใส่ class space-y-2 */}
+                {['password', 'loginHistory'].map((tab) => ( //, 'location'
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`block w-full text-left px-4 py-2 rounded-lg transition-all ${
+                      activeTab === tab ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'
+                    }`}
+                  >
+                    {tab === 'password' && 'เปลี่ยนรหัสผ่าน'}
+                    {/* {tab === 'location' && 'ตำแหน่งที่คุณเข้าระบบ'} */}
+                    {tab === 'loginHistory' && 'ประวัติการเข้าสู่ระบบ'}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Content Area */}
-          <div className="md:w-3/4">
+          <div className="md:w-2/4">
             {renderContent()}
           </div>
         </div>
