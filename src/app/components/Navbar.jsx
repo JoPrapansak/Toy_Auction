@@ -1,7 +1,9 @@
 'use client'
 
+
 import React, { useState } from 'react'
-import Link from 'next/link'
+import Link from 'next/link';
+
 
 function Navbar() {
 
@@ -23,25 +25,30 @@ function Navbar() {
   //     console.error('Error logging out:', error);
   //   }
   // };
-
+    const [searchText, setSearchText] = React.useState("")
   return (
     <div>
       <nav className="bg-red-600 text-white py-3">
         <div className="container mx-auto">
           <div className='flex justify-between items-center'>
             <div className="flex-1 flex justify-center items-center">
-              <div className="text-2xl font-semibold ms-3">
+              {/*แก้ไขส่วนที่ระยะ และตัวอักษร*/}
+              <div className="text-3xl font-cute font-semibold me-9">
                 Toy Auction
               </div>
-              <input
-                type="text"
-                placeholder="ค้นหาสินค้า"
-                className="w-1/3 p-2 rounded ms-3"
-              />
+              {/*เพิ่มตามนี้เลยนะ ส่วนinput เวลาเราพิมมันไม่เห็นอะไรเลยแก้แล้ว*/}
+                <input
+                  type="text"
+                  style={{ fontFamily: "'Mali',sans-serif"}}
+                  placeholder="ค้นหาสินค้า"
+                  className="w-1/3 p-2 rounded text-black"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                />
             </div>
-            <ul className='flex'>
+            <ul className='flex'  style={{ fontFamily: "'Mali',sans-serif"}}>
               <li className='ms-3'><Link href="/register">สมัครสมาชิก</Link></li>
-              <li className='ms-3'><Link href="/login">ล็อคอิน</Link></li>
+              <li className='ms-3'><Link href="/login">เข้าสู่ระบบ</Link></li>
               {/* Notification Bell */}
               {/* <li className='ms-3 relative'>
                 <button className="hover:text-gray-200">
@@ -55,14 +62,16 @@ function Navbar() {
           </div>
         </div>
       </nav>
-      <nav className='bg-red-600 text-white py-3'>
+      {/*เพิ่มตัวอักษรFont  style */}
+      <nav className='bg-red-600 text-white py-3' style={{ fontFamily: "'Mali',sans-serif"}}>
         <div className='container mx-auto'>
           <div className='flex justify-center items-center'>
             <ul className='flex space-x-10'>
+              {/*เราแก้ภาษาตรงนี้*/}
               <li className='ms-3'><Link href="/">หน้าหลัก</Link></li>
               <li className='ms-3'><Link href="/product">สินค้าประมูล</Link></li>
-              <li className='ms-3'><Link href="/about">เกี่ยวกับเรา</Link></li>
-              <li className='ms-3'><Link href="/contact">ติดต่อเรา</Link></li>
+              <li className='ms-3'><Link href="/winner">ประกาศผู้ชนะ</Link></li>
+              <li className='ms-3'><Link href="/contact">ติดต่อ</Link></li>
             </ul>
           </div>
         </div>
@@ -72,6 +81,81 @@ function Navbar() {
 }
 
 export default Navbar;
+
+// 'use client'
+
+// import React, { useState } from 'react'
+// import Link from 'next/link'
+
+// function Navbar() {
+
+//   // const handleLogout = async () => {
+//   //   try {
+//   //     const res = await fetch('http://localhost:3111/api/v1/auth/logout', {
+//   //       method: 'POST',
+//   //       credentials: 'include', // ส่ง cookies ไปกับ request
+//   //     });
+
+//   //     if (res.status === 200) {
+//   //       console.log('Logged out successfully');
+//   //       // ลบ session หรือรีเฟรชหน้า
+//   //       window.location.href = '/';
+//   //     } else {
+//   //       console.error('Failed to log out:', res.status);
+//   //     }
+//   //   } catch (error) {
+//   //     console.error('Error logging out:', error);
+//   //   }
+//   // };
+
+//   return (
+//     <div>
+//       <nav className="bg-red-600 text-white py-3">
+//         <div className="container mx-auto">
+//           <div className='flex justify-between items-center'>
+//             <div className="flex-1 flex justify-center items-center">
+//               <div className="text-2xl font-semibold ms-3">
+//                 Toy Auction
+//               </div>
+//               <input
+//                 type="text"
+//                 placeholder="ค้นหาสินค้า"
+//                 className="w-1/3 p-2 rounded ms-3"
+//               />
+//             </div>
+//             <ul className='flex'>
+//               <li className='ms-3'><Link href="/register">สมัครสมาชิก</Link></li>
+//               <li className='ms-3'><Link href="/login">ล็อคอิน</Link></li>
+//               {/* Notification Bell */}
+//               {/* <li className='ms-3 relative'>
+//                 <button className="hover:text-gray-200">
+//                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+//                     <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+//                   </svg>
+//                   <span className="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
+//                 </button>
+//               </li> */}
+//             </ul>
+//           </div>
+//         </div>
+//       </nav>
+//       <nav className='bg-red-600 text-white py-3'>
+//         <div className='container mx-auto'>
+//           <div className='flex justify-center items-center'>
+//             <ul className='flex space-x-10'>
+//               <li className='ms-3'><Link href="/">หน้าหลัก</Link></li>
+//               <li className='ms-3'><Link href="/product">สินค้าประมูล</Link></li>
+//               <li className='ms-3'><Link href="/about">เกี่ยวกับเรา</Link></li>
+//               <li className='ms-3'><Link href="/contact">ติดต่อเรา</Link></li>
+//             </ul>
+//           </div>
+//         </div>
+//       </nav>
+//     </div>
+//   )
+// }
+
+// export default Navbar;
 
 
 // 'use client'
