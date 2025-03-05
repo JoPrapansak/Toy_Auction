@@ -3,6 +3,7 @@
 import React from 'react'
 import Navbar from '../components/Navbar';
 import Product from '../components/Product';
+import NavContact from '../components/NavContact';
 
 // const products = [
 //     { id: 1, name: 'Bandai กันพลา กันดั้ม RG 1/144 GUNDAM EXIA', image: '/image/Product1.png', price: 1200},
@@ -15,7 +16,10 @@ function product() {
   return (
     <div>
       <Navbar/>
-      <Product/>
+      <div className='container mx-auto px-4 mb-16'>  
+        <Product/>
+      </div>
+      <NavContact/>
     </div>
   )
 }

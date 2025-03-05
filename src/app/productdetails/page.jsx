@@ -368,6 +368,7 @@ import React, { useState, useEffect } from 'react';
 import NavUser from '../components/NavUser';
 import { useSearchParams } from 'next/navigation';
 import NavContact from '../components/NavContact';
+import product from '../product/page';
 
 function ProductDetailsPage() {
   const searchParams = useSearchParams();
@@ -474,7 +475,7 @@ function ProductDetailsPage() {
     <div>
       <NavUser />
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="rounded-lg overflow-hidden">
             <img src={image} alt={name} className="w-full h-auto object-cover" />
           </div>
@@ -543,7 +544,7 @@ function ProductDetailsPage() {
             </div>
           </div>
           {/* Seller Information - Centered */}
-          <div className="mt-8 flex justify-center">
+          {/* <div className="mt-8 flex justify-center">
               <div className="bg-white p-6 rounded-lg w-96">
                 <div className="flex flex-col items-center space-y-4 border-2 border-black rounded-lg p-4">
                 <h2 className="text-xl font-semibold mb-4 text-center">ข้อมูลผู้ขาย</h2>
@@ -554,7 +555,7 @@ function ProductDetailsPage() {
                   />
                   <div className="text-center">
                     <h3 className="font-medium">ชื่อผู้ขาย</h3>
-                    {/* <p className="text-sm text-gray-500">สมาชิกตั้งแต่: January 2024</p> */}
+                    <p className="text-sm text-gray-500">สมาชิกตั้งแต่: January 2024</p>
                     <div className="flex items-center justify-center mt-1">
                       <span className="text-yellow-400">★★★★★</span>
                       <span className="text-sm text-gray-500 ml-1">(5.0)</span>
@@ -565,7 +566,7 @@ function ProductDetailsPage() {
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
         </div>
       </div>
 
