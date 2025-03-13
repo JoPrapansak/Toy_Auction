@@ -111,7 +111,7 @@ function LoginPage() {
             </div>
             <button
               type="submit"
-              className="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700"
+              className="w-full bg-[#FFA6D4] text-white py-2 rounded-md hover:bg-[#FFA6D4]"
               >
               เข้าสู่ระบบ
             </button>

@@ -20,7 +20,7 @@ function HomeUserpage() {
 //     { src: "/image/3.jpg" },
 //   ]
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-yellow-100 to-blue-200">
       <NavUser session={session}/>
       
         <div className='container mx-auto px-4'>

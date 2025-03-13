@@ -1,70 +1,94 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 function ProductPage() {
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [timeLeft, setTimeLeft] = useState({})
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [timeLeft, setTimeLeft] = useState({});
+  const [currentImageIndex, setCurrentImageIndex] = useState({}); // ✅ ติดตามภาพปัจจุบันแต่ละสินค้า
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:3111/api/v1/auction')
-        const data = await response.json()
+        const response = await fetch('http://localhost:3111/api/v1/auction');
+        const data = await response.json();
 
         if (data.status === 'success') {
-          setProducts(data.data)
+          setProducts(data.data);
 
-          // คำนวณเวลาที่เหลือเริ่มต้น
-          const initialTimeLeft = {}
+          // ✅ ตั้งค่าภาพเริ่มต้นเป็นภาพแรก
+          const initialIndexes = {};
           data.data.forEach(product => {
-            initialTimeLeft[product._id] = calculateTimeLeft(product.expiresAt)
-          })
-          setTimeLeft(initialTimeLeft)
+            initialIndexes[product._id] = 0;
+          });
+          setCurrentImageIndex(initialIndexes);
 
-          // ตั้ง `setInterval` ให้นับเวลาถอยหลังทุกวินาที
+          // ✅ คำนวณเวลาที่เหลือเริ่มต้น
+          const initialTimeLeft = {};
+          data.data.forEach(product => {
+            initialTimeLeft[product._id] = calculateTimeLeft(product.expiresAt);
+          });
+          setTimeLeft(initialTimeLeft);
+
+          // ✅ ตั้ง `setInterval` ให้นับเวลาถอยหลังทุกวินาที
           const interval = setInterval(() => {
-            const updatedTimeLeft = {}
+            const updatedTimeLeft = {};
             data.data.forEach(product => {
-              updatedTimeLeft[product._id] = calculateTimeLeft(product.expiresAt)
-            })
-            setTimeLeft(updatedTimeLeft)
-          }, 1000)
+              updatedTimeLeft[product._id] = calculateTimeLeft(product.expiresAt);
+            });
+            setTimeLeft(updatedTimeLeft);
+          }, 1000);
 
-          return () => clearInterval(interval) // เคลียร์เมื่อ Component Unmount
+          return () => clearInterval(interval); // ✅ เคลียร์ `interval` เมื่อ Component Unmount
         } else {
-          throw new Error('ไม่สามารถโหลดสินค้าประมูลได้')
+          throw new Error('ไม่สามารถโหลดสินค้าประมูลได้');
         }
       } catch (err) {
-        setError(err.message)
+        setError(err.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchProducts()
-  }, [])
+    fetchProducts();
+  }, []);
 
   // 📌 ฟังก์ชันคำนวณเวลาที่เหลือ
   const calculateTimeLeft = (expiresAt) => {
-    const endTime = new Date(expiresAt).getTime()
-    const now = new Date().getTime()
-    const diff = endTime - now
+    const endTime = new Date(expiresAt).getTime();
+    const now = new Date().getTime();
+    const diff = endTime - now;
 
-    if (diff <= 0) return "หมดเวลา"
+    if (diff <= 0) return "หมดเวลา";
 
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
-    const minutes = Math.floor((diff / (1000 * 60)) % 60)
-    const seconds = Math.floor((diff / 1000) % 60)
-    return `${hours}:${minutes}:${seconds}`
-  }
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+    return `${hours}:${minutes}:${seconds}`;
+  };
+
+  // 📌 เปลี่ยนภาพสินค้าไปทางซ้าย
+  const prevImage = (productId, images) => {
+    setCurrentImageIndex(prev => ({
+      ...prev,
+      [productId]: (prev[productId] - 1 + images.length) % images.length
+    }));
+  };
+
+  // 📌 เปลี่ยนภาพสินค้าไปทางขวา
+  const nextImage = (productId, images) => {
+    setCurrentImageIndex(prev => ({
+      ...prev,
+      [productId]: (prev[productId] + 1) % images.length
+    }));
+  };
 
   return (
     <div className="container mx-auto px-4">
-      <h3 className="text-2xl my-3"style={{ fontFamily: "'Mali',sans-serif"}}>ประมูลสินค้า</h3>
+      <h3 className="text-2xl my-3" style={{ fontFamily: "'Mali', sans-serif" }}>ประมูลสินค้า</h3>
 
       {loading ? (
         <p className="text-center">กำลังโหลด...</p>
@@ -72,46 +96,200 @@ function ProductPage() {
         <p className="text-center text-red-500">{error}</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
-          {products.map((product) => (
-            <div key={product._id} className="bg-white p-4 shadow-md rounded-md">
-              <Link
-                href={{
-                  pathname: '/productdetail',
-                  query: {
-                    id: product._id,
-                    name: product.name,
-                    image: product.image,
-                    price: product.currentPrice,
-                    startingPrice: product.startingPrice, // ✅ ส่งไปด้วยเพื่อแสดงหน้า Detail
-                  }
-                }}
-                legacyBehavior
-              >
-                <a>
-                  <img src={product.image} alt={product.name} className="w-full h-auto mb-4 rounded-lg cursor-pointer"/>
-                </a>
-              </Link>
-              <div className="mb-2">
-                <h2 className="text-lg font-semibold">{product.name}</h2>
+          {products.map((product) => {
+            const images = product.image || ['/default-image.jpg']; // ✅ ป้องกัน error ถ้าไม่มีภาพ
+            const currentImgIndex = currentImageIndex[product._id] || 0;
+
+            return (
+              <div key={product._id} className="bg-white p-4 shadow-md rounded-md relative">
+                <Link
+                  href={{
+                    pathname: '/productdetail',
+                    query: {
+                      id: product._id,
+                      name: product.name,
+                      images: JSON.stringify(product.image), // ✅ ส่ง array ของรูปไปด้วย
+                      price: product.currentPrice,
+                      startingPrice: product.startingPrice,
+                    }
+                  }}
+                  legacyBehavior
+                >
+                  <a>
+                    {/* ✅ ส่วนแสดงภาพสินค้า */}
+                    <div className="relative w-full h-60 overflow-hidden rounded-lg">
+                      <img
+                        src={images[currentImgIndex]}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+
+                      {/* ปุ่มเปลี่ยนรูป */}
+                      {/* {images.length > 1 && (
+                        <>
+                          <button
+                            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white p-2 rounded-full"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              prevImage(product._id, images);
+                            }}
+                          >
+                            ◀
+                          </button>
+                          <button
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white p-2 rounded-full"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              nextImage(product._id, images);
+                            }}
+                          >
+                            ▶
+                          </button>
+                        </>
+                      )} */}
+                    </div>
+                  </a>
+                </Link>
+
+                {/* ✅ ข้อมูลสินค้า */}
+                <div className="mt-2">
+                  <h2 className="text-lg font-semibold">{product.name}</h2>
+                  <p className="text-sm text-gray-600">
+                    ราคา: <span className="font-semibold">{product.currentPrice} บาท</span>
+                  </p>
+                </div>
+
+                {/* ✅ แสดงเวลาที่เหลือ */}
+                <div className="flex justify-between mt-2">
+                  <h3 className="text-lg font-semibold text-red-500">
+                    {timeLeft[product._id] || "กำลังโหลด..."}
+                  </h3>
+                </div>
               </div>
-              <div className="flex flex-col gap-1 justify-between">
-                {/* <p className="text-sm text-gray-600">ราคาเริ่มต้น: <span className="font-semibold">{product.startingPrice} บาท</span></p> */}
-                <p className="text-sm text-gray-600">ราคา: <span className="font-semibold">{product.currentPrice} บาท</span></p>
-              </div>
-              <div className="flex justify-between mt-2">
-                <h3 className="text-lg font-semibold text-red-500">
-                  {timeLeft[product._id] || "กำลังโหลด..."}
-                </h3>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default ProductPage
+export default ProductPage;
+
+// 'use client'
+
+// import React, { useState, useEffect } from 'react'
+// import Link from 'next/link'
+
+// function ProductPage() {
+//   const [products, setProducts] = useState([])
+//   const [loading, setLoading] = useState(true)
+//   const [error, setError] = useState(null)
+//   const [timeLeft, setTimeLeft] = useState({})
+
+//   useEffect(() => {
+//     const fetchProducts = async () => {
+//       try {
+//         const response = await fetch('http://localhost:3111/api/v1/auction')
+//         const data = await response.json()
+
+//         if (data.status === 'success') {
+//           setProducts(data.data)
+
+//           // คำนวณเวลาที่เหลือเริ่มต้น
+//           const initialTimeLeft = {}
+//           data.data.forEach(product => {
+//             initialTimeLeft[product._id] = calculateTimeLeft(product.expiresAt)
+//           })
+//           setTimeLeft(initialTimeLeft)
+
+//           // ตั้ง `setInterval` ให้นับเวลาถอยหลังทุกวินาที
+//           const interval = setInterval(() => {
+//             const updatedTimeLeft = {}
+//             data.data.forEach(product => {
+//               updatedTimeLeft[product._id] = calculateTimeLeft(product.expiresAt)
+//             })
+//             setTimeLeft(updatedTimeLeft)
+//           }, 1000)
+
+//           return () => clearInterval(interval) // เคลียร์เมื่อ Component Unmount
+//         } else {
+//           throw new Error('ไม่สามารถโหลดสินค้าประมูลได้')
+//         }
+//       } catch (err) {
+//         setError(err.message)
+//       } finally {
+//         setLoading(false)
+//       }
+//     }
+
+//     fetchProducts()
+//   }, [])
+
+//   // 📌 ฟังก์ชันคำนวณเวลาที่เหลือ
+//   const calculateTimeLeft = (expiresAt) => {
+//     const endTime = new Date(expiresAt).getTime()
+//     const now = new Date().getTime()
+//     const diff = endTime - now
+
+//     if (diff <= 0) return "หมดเวลา"
+
+//     const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
+//     const minutes = Math.floor((diff / (1000 * 60)) % 60)
+//     const seconds = Math.floor((diff / 1000) % 60)
+//     return `${hours}:${minutes}:${seconds}`
+//   }
+
+//   return (
+//     <div className="container mx-auto px-4">
+//       <h3 className="text-2xl my-3"style={{ fontFamily: "'Mali',sans-serif"}}>ประมูลสินค้า</h3>
+
+//       {loading ? (
+//         <p className="text-center">กำลังโหลด...</p>
+//       ) : error ? (
+//         <p className="text-center text-red-500">{error}</p>
+//       ) : (
+//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+//           {products.map((product) => (
+//             <div key={product._id} className="bg-white p-4 shadow-md rounded-md">
+//               <Link
+//                 href={{
+//                   pathname: '/productdetail',
+//                   query: {
+//                     id: product._id,
+//                     name: product.name,
+//                     image: product.image,
+//                     price: product.currentPrice,
+//                     startingPrice: product.startingPrice, // ✅ ส่งไปด้วยเพื่อแสดงหน้า Detail
+//                   }
+//                 }}
+//                 legacyBehavior
+//               >
+//                 <a>
+//                   <img src={product.image} alt={product.name} className="w-full h-auto mb-4 rounded-lg cursor-pointer"/>
+//                 </a>
+//               </Link>
+//               <div className="mb-2">
+//                 <h2 className="text-lg font-semibold">{product.name}</h2>
+//               </div>
+//               <div className="flex flex-col gap-1 justify-between">
+//                 {/* <p className="text-sm text-gray-600">ราคาเริ่มต้น: <span className="font-semibold">{product.startingPrice} บาท</span></p> */}
+//                 <p className="text-sm text-gray-600">ราคา: <span className="font-semibold">{product.currentPrice} บาท</span></p>
+//               </div>
+//               <div className="flex justify-between mt-2">
+//                 <h3 className="text-lg font-semibold text-red-500">
+//                   {timeLeft[product._id] || "กำลังโหลด..."}
+//                 </h3>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   )
+// }
+
+// export default ProductPage
 
 // 'use client'
 

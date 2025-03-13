@@ -4,7 +4,7 @@ import { SiLine } from "react-icons/si"
 
 function NavContact() {
   return (
-    <div className="bg-red-600">
+    <div className="bg-[#FFA6D4]">
       <div className="container mx-auto px-4 py-4">
         <div className="rounded-lg p-6 max-w-2xl">
           <h2 className="text-xl font-semibold mb-6 text-white">ติดต่อเรา</h2>

@@ -16,7 +16,7 @@ import NavContact from '../components/NavContact';
 
 function productuser() {
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-yellow-100 to-blue-200">
       <NavUser/>
       <div className='container mx-auto px-4 mb-16'>
         <Product/>

@@ -11,7 +11,7 @@ function HomePage() {
   const { data: session } = useSession()
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-yellow-100 to-blue-200">
       <Navbar session={session}/>
       <div className='container mx-auto px-4'>
         {/* <h3 className='text-2xl my-3'>หมวดหมู่สินค้า {session?.user?.name}</h3> */}

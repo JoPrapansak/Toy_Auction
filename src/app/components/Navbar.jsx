@@ -28,7 +28,7 @@ function Navbar() {
     const [searchText, setSearchText] = React.useState("")
   return (
     <div>
-      <nav className="bg-red-600 text-white py-3">
+      <nav className="bg-[#FFA6D4] text-white py-3">
         <div className="container mx-auto">
           <div className='flex justify-between items-center'>
             <div className="flex-1 flex justify-center items-center">
@@ -63,7 +63,7 @@ function Navbar() {
         </div>
       </nav>
       {/*เพิ่มตัวอักษรFont  style */}
-      <nav className='bg-red-600 text-white py-3' style={{ fontFamily: "'Mali',sans-serif"}}>
+      <nav className='bg-[#FFA6D4] text-white py-3' style={{ fontFamily: "'Mali',sans-serif"}}>
         <div className='container mx-auto'>
           <div className='flex justify-center items-center'>
             <ul className='flex space-x-10'>

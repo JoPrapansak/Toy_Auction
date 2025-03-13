@@ -22,7 +22,7 @@ function EditProfilePage() {
         const data = await response.json()
 
         setFormData({
-          name: data.data.name || 'New User',
+          name: data.data.name || '',
           email: data.data.email || '',
           phone: data.data.phone || '',
           address: data.data.address || '',
