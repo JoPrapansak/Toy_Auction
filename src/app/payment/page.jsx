@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import NavUser from '../components/NavUser';
 
 const API_URL = "http://localhost:3111/api/v1";
 
@@ -83,79 +84,82 @@ function PaymentPage() {
   if (!auction) return <p className="text-center text-red-500">❌ ไม่พบสินค้านี้</p>;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-pink-200 via-yellow-100 to-blue-200 text-gray-800">
-      <div className="bg-white p-6 rounded-3xl shadow-xl w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* 🔥 ส่วนแสดงรายละเอียดสินค้า */}
-        <div className="p-4">
-          <h1 className="text-2xl font-extrabold text-gray-900 text-center mb-4">
-            📦 รายละเอียดสินค้า
-          </h1>
-          {auction.image && auction.image.length > 0 && (
-            <img
-              src={auction.image[0]}
-              alt={auction.name}
-              className="w-full h-60 object-cover rounded-xl shadow-lg"
-            />
-          )}
-          <h2 className="text-xl font-semibold text-gray-800 mt-4">{auction.name}</h2>
-          <p className="text-gray-600">{auction.description}</p>
-          <p className="text-xl font-bold text-green-600 mt-2">💰 ราคา: {auction.currentPrice} บาท</p>
-
-          {/* 🔥 ข้อมูลผู้ขาย */}
-          <div className="mt-6 bg-gray-100 p-4 rounded-xl shadow">
-            <h3 className="text-lg font-semibold text-gray-700">👤 ข้อมูลผู้ขาย</h3>
-            <p className="text-gray-800">📛 ชื่อ: {auction.seller?.name || "ไม่ระบุ"}</p>
-            <p className="text-gray-800">📧 Email: {auction.seller?.email || "ไม่มีข้อมูล"}</p>
-            <p className="text-gray-800">📞 เบอร์โทร: {auction.seller?.phone || "ไม่มีข้อมูล"}</p>
-          </div>
-        </div>
-
-        {/* 🔥 ส่วนแสดง QR Code และการชำระเงิน */}
-        <div className="p-4 flex flex-col justify-center items-center border-l border-gray-300">
-          <h1 className="text-2xl font-extrabold text-gray-900 text-center mb-4">
-            💳 ชำระเงิน
-          </h1>
-
-          {qrCode ? (
-            <div className="text-center">
-              <h2 className="text-lg font-semibold text-gray-700">🔗 QR Code สำหรับการชำระเงิน</h2>
+    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-yellow-100 to-blue-200">
+      <NavUser />
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-white p-6 rounded-3xl shadow-xl w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 mx-auto">
+          {/* 🔥 ส่วนแสดงรายละเอียดสินค้า */}
+          <div className="p-4">
+            <h1 className="text-2xl font-extrabold text-gray-900 text-center mb-4">
+              📦 รายละเอียดสินค้า
+            </h1>
+            {auction.image && auction.image.length > 0 && (
               <img
-                src={qrCode}
-                alt="QR Code"
-                className="w-48 h-48 border-2 border-gray-400 rounded-lg shadow-xl mt-4 mx-auto"
+                src={auction.image[0]}
+                alt={auction.name}
+                className="w-full h-60 object-cover rounded-xl shadow-lg"
               />
+            )}
+            <h2 className="text-xl font-semibold text-gray-800 mt-4">{auction.name}</h2>
+            <p className="text-gray-600">{auction.description}</p>
+            <p className="text-xl font-bold text-green-600 mt-2">💰 ราคา: {auction.currentPrice} บาท</p>
+
+            {/* 🔥 ข้อมูลผู้ขาย */}
+            <div className="mt-6 bg-gray-100 p-4 rounded-xl shadow">
+              <h3 className="text-lg font-semibold text-gray-700">👤 ข้อมูลผู้ขาย</h3>
+              <p className="text-gray-800">📛 ชื่อ: {auction.seller?.name || "ไม่ระบุ"}</p>
+              <p className="text-gray-800">📧 Email: {auction.seller?.email || "ไม่มีข้อมูล"}</p>
+              <p className="text-gray-800">📞 เบอร์โทร: {auction.seller?.phone || "ไม่มีข้อมูล"}</p>
             </div>
-          ) : (
-            <p className="text-gray-500 text-center">⏳ กำลังสร้าง QR Code...</p>
-          )}
+          </div>
 
-          {/* 🔥 แสดงจำนวนเงิน */}
-          <p className="text-lg font-bold text-gray-800 mt-6">💰 จำนวนเงินที่ต้องจ่าย: {amount} บาท</p>
+          {/* 🔥 ส่วนแสดง QR Code และการชำระเงิน */}
+          <div className="p-4 flex flex-col justify-center items-center border-l border-gray-300">
+            <h1 className="text-2xl font-extrabold text-gray-900 text-center mb-4">
+              💳 ชำระเงิน
+            </h1>
 
-          {/* 🔥 แสดงสถานะการชำระเงิน */}
-          <div className="mt-4 flex items-center">
-            <span className="text-lg font-semibold">สถานะ:</span>
-            {paymentStatus === "completed" ? (
-              <span className="ml-2 text-green-600 font-bold flex items-center">
-                ✔ ชำระเงินแล้ว <span className="ml-2 w-4 h-4 bg-green-500 rounded-full"></span>
-              </span>
+            {qrCode ? (
+              <div className="text-center">
+                <h2 className="text-lg font-semibold text-gray-700">🔗 QR Code สำหรับการชำระเงิน</h2>
+                <img
+                  src={qrCode}
+                  alt="QR Code"
+                  className="w-48 h-48 border-2 border-gray-400 rounded-lg shadow-xl mt-4 mx-auto"
+                />
+              </div>
             ) : (
-              <span className="ml-2 text-red-500 font-bold flex items-center">
-                ⏳ รอชำระเงิน <span className="ml-2 w-4 h-4 bg-red-500 rounded-full"></span>
-              </span>
+              <p className="text-gray-500 text-center">⏳ กำลังสร้าง QR Code...</p>
+            )}
+
+            {/* 🔥 แสดงจำนวนเงิน */}
+            <p className="text-lg font-bold text-gray-800 mt-6">💰 จำนวนเงินที่ต้องจ่าย: {amount} บาท</p>
+
+            {/* 🔥 แสดงสถานะการชำระเงิน */}
+            <div className="mt-4 flex items-center">
+              <span className="text-lg font-semibold">สถานะ:</span>
+              {paymentStatus === "completed" ? (
+                <span className="ml-2 text-green-600 font-bold flex items-center">
+                  ✔ ชำระเงินแล้ว <span className="ml-2 w-4 h-4 bg-green-500 rounded-full"></span>
+                </span>
+              ) : (
+                <span className="ml-2 text-red-500 font-bold flex items-center">
+                  ⏳ รอชำระเงิน <span className="ml-2 w-4 h-4 bg-red-500 rounded-full"></span>
+                </span>
+              )}
+            </div>
+
+            {/* 🔥 แสดงข้อมูลผู้ชนะบิด */}
+            {winner && (
+              <div className="mt-6 bg-gray-100 p-4 rounded-xl shadow">
+                <h3 className="text-lg font-semibold text-gray-700">👤 ข้อมูลผู้ชนะบิด</h3>
+                <p className="text-gray-800">📛 ชื่อ: {winner.name || "ไม่ระบุ"}</p>
+                <p className="text-gray-800">📧 Email: {winner.email || "ไม่มีข้อมูล"}</p>
+                <p className="text-gray-800">📞 เบอร์โทร: {winner.phone || "ไม่มีข้อมูล"}</p>
+                <p className="text-gray-800">🏠 ที่อยู่: {winner.address || "ไม่มีข้อมูล"}</p>
+              </div>
             )}
           </div>
-
-          {/* 🔥 แสดงข้อมูลผู้ชนะบิด */}
-          {winner && (
-            <div className="mt-6 bg-gray-100 p-4 rounded-xl shadow">
-              <h3 className="text-lg font-semibold text-gray-700">👤 ข้อมูลผู้ชนะบิด</h3>
-              <p className="text-gray-800">📛 ชื่อ: {winner.name || "ไม่ระบุ"}</p>
-              <p className="text-gray-800">📧 Email: {winner.email || "ไม่มีข้อมูล"}</p>
-              <p className="text-gray-800">📞 เบอร์โทร: {winner.phone || "ไม่มีข้อมูล"}</p>
-              <p className="text-gray-800">🏠 ที่อยู่: {winner.address || "ไม่มีข้อมูล"}</p>
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -163,6 +167,172 @@ function PaymentPage() {
 }
 
 export default PaymentPage;
+
+// 'use client';
+
+// import React, { useState, useEffect } from 'react';
+// import { useSearchParams } from 'next/navigation';
+
+// const API_URL = "http://localhost:3111/api/v1";
+
+// function PaymentPage() {
+//   const searchParams = useSearchParams();
+//   const [auction, setAuction] = useState(null);
+//   const [winner, setWinner] = useState(null);  // ข้อมูลผู้ชนะบิด
+//   const [recipient, setRecipient] = useState('');
+//   const [amount, setAmount] = useState('');
+//   const [qrCode, setQrCode] = useState(null);
+//   const [paymentStatus, setPaymentStatus] = useState("pending");
+//   const [error, setError] = useState(null);
+//   const [loading, setLoading] = useState(true);
+
+//   const auctionId = searchParams.get('auctionId');
+
+//   useEffect(() => {
+//     if (!auctionId) {
+//       setError("❌ ไม่พบข้อมูลการประมูล");
+//       return;
+//     }
+
+//     fetch(`${API_URL}/auction/${auctionId}`)
+//       .then(res => res.json())
+//       .then(data => {
+//         if (data.status === "success") {
+//           setAuction(data.data);
+//           setAmount(data.data.currentPrice);
+
+//           if (data.data.seller && data.data.seller.phone) {
+//             setRecipient(data.data.seller.phone);
+//             generateQR(data.data.seller.phone, data.data.currentPrice);
+//           }
+
+//           // ดึงข้อมูลผู้ชนะบิด
+//           if (data.data.winner) {
+//             setWinner(data.data.winner);  // สมมติว่า `winner` มีข้อมูลของผู้ชนะ
+//           }
+
+//         } else {
+//           setError("❌ ไม่พบข้อมูลการประมูล");
+//         }
+//         setLoading(false);
+//       })
+//       .catch(err => {
+//         setError("❌ เกิดข้อผิดพลาดในการโหลดข้อมูล");
+//         setLoading(false);
+//       });
+//   }, [auctionId]);
+
+//   const generateQR = async (phone, price) => {
+//     if (!phone || !price) {
+//       setError("⚠️ ข้อมูลไม่ครบถ้วน ไม่สามารถสร้าง QR Code ได้");
+//       return;
+//     }
+
+//     try {
+//       const response = await fetch(`${API_URL}/payment/generate-qr`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ recipient: phone, amount: price, auctionId }),
+//       });
+
+//       const data = await response.json();
+//       if (data.success) {
+//         setQrCode(data.qrCode);
+//         setPaymentStatus("completed");
+//         setError(null);
+//       } else {
+//         setError("❌ สร้าง QR Code ล้มเหลว");
+//       }
+//     } catch (error) {
+//       setError("❌ เกิดข้อผิดพลาดในการสร้าง QR Code");
+//     }
+//   };
+
+//   if (loading) return <p className="text-center text-lg">⏳ กำลังโหลดข้อมูลสินค้า...</p>;
+//   if (error) return <p className="text-center text-red-500">{error}</p>;
+//   if (!auction) return <p className="text-center text-red-500">❌ ไม่พบสินค้านี้</p>;
+
+//   return (
+//     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-pink-200 via-yellow-100 to-blue-200 text-gray-800">
+//       <div className="bg-white p-6 rounded-3xl shadow-xl w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8">
+//         {/* 🔥 ส่วนแสดงรายละเอียดสินค้า */}
+//         <div className="p-4">
+//           <h1 className="text-2xl font-extrabold text-gray-900 text-center mb-4">
+//             📦 รายละเอียดสินค้า
+//           </h1>
+//           {auction.image && auction.image.length > 0 && (
+//             <img
+//               src={auction.image[0]}
+//               alt={auction.name}
+//               className="w-full h-60 object-cover rounded-xl shadow-lg"
+//             />
+//           )}
+//           <h2 className="text-xl font-semibold text-gray-800 mt-4">{auction.name}</h2>
+//           <p className="text-gray-600">{auction.description}</p>
+//           <p className="text-xl font-bold text-green-600 mt-2">💰 ราคา: {auction.currentPrice} บาท</p>
+
+//           {/* 🔥 ข้อมูลผู้ขาย */}
+//           <div className="mt-6 bg-gray-100 p-4 rounded-xl shadow">
+//             <h3 className="text-lg font-semibold text-gray-700">👤 ข้อมูลผู้ขาย</h3>
+//             <p className="text-gray-800">📛 ชื่อ: {auction.seller?.name || "ไม่ระบุ"}</p>
+//             <p className="text-gray-800">📧 Email: {auction.seller?.email || "ไม่มีข้อมูล"}</p>
+//             <p className="text-gray-800">📞 เบอร์โทร: {auction.seller?.phone || "ไม่มีข้อมูล"}</p>
+//           </div>
+//         </div>
+
+//         {/* 🔥 ส่วนแสดง QR Code และการชำระเงิน */}
+//         <div className="p-4 flex flex-col justify-center items-center border-l border-gray-300">
+//           <h1 className="text-2xl font-extrabold text-gray-900 text-center mb-4">
+//             💳 ชำระเงิน
+//           </h1>
+
+//           {qrCode ? (
+//             <div className="text-center">
+//               <h2 className="text-lg font-semibold text-gray-700">🔗 QR Code สำหรับการชำระเงิน</h2>
+//               <img
+//                 src={qrCode}
+//                 alt="QR Code"
+//                 className="w-48 h-48 border-2 border-gray-400 rounded-lg shadow-xl mt-4 mx-auto"
+//               />
+//             </div>
+//           ) : (
+//             <p className="text-gray-500 text-center">⏳ กำลังสร้าง QR Code...</p>
+//           )}
+
+//           {/* 🔥 แสดงจำนวนเงิน */}
+//           <p className="text-lg font-bold text-gray-800 mt-6">💰 จำนวนเงินที่ต้องจ่าย: {amount} บาท</p>
+
+//           {/* 🔥 แสดงสถานะการชำระเงิน */}
+//           <div className="mt-4 flex items-center">
+//             <span className="text-lg font-semibold">สถานะ:</span>
+//             {paymentStatus === "completed" ? (
+//               <span className="ml-2 text-green-600 font-bold flex items-center">
+//                 ✔ ชำระเงินแล้ว <span className="ml-2 w-4 h-4 bg-green-500 rounded-full"></span>
+//               </span>
+//             ) : (
+//               <span className="ml-2 text-red-500 font-bold flex items-center">
+//                 ⏳ รอชำระเงิน <span className="ml-2 w-4 h-4 bg-red-500 rounded-full"></span>
+//               </span>
+//             )}
+//           </div>
+
+//           {/* 🔥 แสดงข้อมูลผู้ชนะบิด */}
+//           {winner && (
+//             <div className="mt-6 bg-gray-100 p-4 rounded-xl shadow">
+//               <h3 className="text-lg font-semibold text-gray-700">👤 ข้อมูลผู้ชนะบิด</h3>
+//               <p className="text-gray-800">📛 ชื่อ: {winner.name || "ไม่ระบุ"}</p>
+//               <p className="text-gray-800">📧 Email: {winner.email || "ไม่มีข้อมูล"}</p>
+//               <p className="text-gray-800">📞 เบอร์โทร: {winner.phone || "ไม่มีข้อมูล"}</p>
+//               <p className="text-gray-800">🏠 ที่อยู่: {winner.address || "ไม่มีข้อมูล"}</p>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default PaymentPage;
 
 // 'use client'
 
