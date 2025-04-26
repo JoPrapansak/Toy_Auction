@@ -15,22 +15,27 @@ function MyAuctionsPage() {
   const [myCreatedAuctions, setMyCreatedAuctions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [paymentStatuses, setPaymentStatuses] = useState({});
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAuctionId, setSelectedAuctionId] = useState(null);
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (user) setCurrentUser(user);
+
     fetchData(activeTab);
 
     socket.on("bid_update", (data) => {
-      setMyBids(prev => prev.map(bid => 
-        bid.auction?._id === data.auctionId 
+      setMyBids(prev => prev.map(bid =>
+        bid.auction?._id === data.auctionId
           ? { ...bid, auction: { ...bid.auction, currentPrice: data.highestBid } }
           : bid
       ));
     });
 
-    return () => {
-      socket.off("bid_update");
-    };
+    return () => socket.off("bid_update");
   }, [activeTab]);
 
   const fetchData = async (tab) => {
@@ -50,36 +55,44 @@ function MyAuctionsPage() {
         if (tab === "bidHistory") setMyBids(data.data || []);
         if (tab === "createdAuctions") setMyCreatedAuctions(data.data || []);
       }
-    } catch (error) {
-      setError('โหลดข้อมูลล้มเหลว');
+    } catch (err) {
+      setError("โหลดข้อมูลล้มเหลว");
     } finally {
       setLoading(false);
     }
   };
 
-  // const fetchData = async (tab) => {
-  //   setLoading(true);
-  //   try {
-  //     let response;
-  //     if (tab === "winningBids") {
-  //       response = await fetch(`${API_URL}/auction/my-winning-bids`, { credentials: 'include' });
-  //     } else if (tab === "bidHistory") {
-  //       response = await fetch(`${API_URL}/auction/my-bids`, { credentials: 'include' });
-  //     } else if (tab === "createdAuctions") {
-  //       response = await fetch(`${API_URL}/auction/my-auctions`, { credentials: 'include' });
-  //     }
-  //     const data = await response.json();
-  //     if (data.status === 'success') {
-  //       if (tab === "winningBids") setMyWinningBids(data.data || []);
-  //       if (tab === "bidHistory") setMyBids(data.data || []);
-  //       if (tab === "createdAuctions") setMyCreatedAuctions(data.data || []);
-  //     }
-  //   } catch (error) {
-  //     setError('โหลดข้อมูลล้มเหลว');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  useEffect(() => {
+    const fetchStatuses = async () => {
+
+      
+      const updatedStatuses = {};
+      for (const bid of myWinningBids) {
+        try {
+          const res = await fetch(`${API_URL}/payment/slip-by-auction/${bid.auction?._id}`, {
+            credentials: 'include'
+          });
+          const data = await res.json();
+          
+          updatedStatuses[bid.auction?._id] = {
+            isPaid: data.isPaid,
+            slipUploaded: !!data.slipImage,
+            status: data.status,                     // ✅ จาก backend
+            shippingStatus: data.shippingStatus,     // ✅ สำหรับ track
+            trackingNumber: data.trackingNumber,
+          };
+          
+          
+        } catch (err) {
+          console.error("❌ fetch status error", err);
+        }
+      }
+      setPaymentStatuses(updatedStatuses);
+    };
+    if (activeTab === 'winningBids' && myWinningBids.length > 0) {
+      fetchStatuses();
+    }
+  }, [activeTab, myWinningBids]);
 
   const formatBidTime = (time) => {
     return new Intl.DateTimeFormat('th-TH', {
@@ -88,36 +101,48 @@ function MyAuctionsPage() {
     }).format(new Date(time));
   };
 
-  // ✅ ฟังก์ชันไปหน้าสร้าง QR Code (สำหรับผู้ขาย)
-  const handleCreateQR = (auctionId) => {
-    router.push(`/upload-qr?auctionId=${auctionId}`);
+  const handleCheckPayment = (auctionId) => {
+    router.push(`/check-payment?auctionId=${auctionId}`);
   };
 
-  // ✅ ฟังก์ชันไปหน้าชำระเงิน (สำหรับผู้ชนะการประมูล)
-  const handlePayment = (auctionId, qrCode, paymentId) => {
-    router.push(`/payment?auctionId=${auctionId}&qrCode=${encodeURIComponent(qrCode)}&paymentId=${paymentId}`);
+  const handlePayment = (auctionId) => {
+    router.push(`/payment?auctionId=${auctionId}`);
+  };
+
+  const openModal = (auctionId) => {
+    setSelectedAuctionId(auctionId);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedAuctionId(null);
+  };
+
+  const handleConfirmEdit = () => {
+    router.push(`/edit-auction/${selectedAuctionId}`);
+    closeModal();
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-200 via-yellow-100 to-blue-200 text-gray-800">
       <NavUser />
       <div className="container mx-auto px-6 py-8">
-        <h1 className="text-4xl font-extrabold text-center mb-6 text-pink-600 drop-shadow-md"style={{ fontFamily: "'Mali',sans-serif" }}>
+        <h1 className="text-4xl font-extrabold text-center mb-6 text-pink-600 drop-shadow-md" style={{ fontFamily: "'Mali', sans-serif" }}>
           🎨 ประวัติการประมูลของฉัน 🎨
         </h1>
 
-        {/* Tabs Menu */}
         <div className="flex justify-center space-x-4 mb-6">
           {["winningBids", "bidHistory", "createdAuctions"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-2 rounded-full transition font-semibold text-lg drop-shadow-md ${
-                activeTab === tab 
-                  ? "bg-pink-500 text-white shadow-lg shadow-pink-300/50 scale-105" 
+              className={`px-6 py-2 rounded-full transition font-semibold text-lg drop-shadow-md transform hover:scale-105 ${
+                activeTab === tab
+                  ? "bg-pink-500 text-white shadow-lg shadow-pink-300/50"
                   : "bg-pink-300 text-gray-800 hover:bg-pink-400 hover:text-white"
               }`}
-              style={{ fontFamily: "'Mali',sans-serif" }}
+              style={{ fontFamily: "'Mali', sans-serif" }}
             >
               {tab === "winningBids" && "🏆 บิดที่คุณชนะ"}
               {tab === "bidHistory" && "📜 ประวัติการบิด"}
@@ -126,54 +151,65 @@ function MyAuctionsPage() {
           ))}
         </div>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="flex justify-center items-center text-gray-600">
-            ⏳ กำลังโหลด...
-          </div>
-        )}
+        {loading && <div className="text-center">⏳ กำลังโหลด...</div>}
+        {error && <p className="text-red-500 text-center">{error}</p>}
 
-        {error && <p className="text-red-400 text-center">{error}</p>}
-
-        {/* 🏆 บิดที่ชนะ */}
         {activeTab === "winningBids" && (
           <div className="space-y-4">
-            {myWinningBids.map((bid) => (
-              <div key={bid._id} className="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-md border border-pink-400 hover:scale-105 transition-all ease-in-out">
-                  <img 
-                    src={bid.auction?.image?.length > 0 ? bid.auction.image[0] : '/default-image.jpg'} 
-                    alt={bid.auction?.name || "Auction Image"} 
-                    className="w-16 h-16 rounded-full object-cover border-4 border-pink-400 drop-shadow-md"
+            {myWinningBids.map((bid) => {
+              const status = paymentStatuses[bid.auction?._id] || {};
+              return (
+                <div key={bid._id} className="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-lg border border-pink-400 hover:scale-105 transition-all ease-in-out">
+                  <img
+                    src={bid.auction?.image?.[0] || '/default-image.jpg'}
+                    alt={bid.auction?.name}
+                    className="w-16 h-16 rounded-full object-cover border-4 border-pink-400"
                   />
-                <div className="flex-grow">
-                  <h2 className="text-xl font-bold">{bid.auction?.name || 'ไม่มีข้อมูล'}</h2>
-                  <p className="text-gray-600">ราคาสุดท้าย: {bid.amount} บาท</p>
-                  <p className="text-gray-500">ปิดการประมูลเมื่อ: {formatBidTime(bid.auction?.expiresAt)}</p>
+                  <div className="flex-grow">
+                    <h2 className="text-xl font-bold">{bid.auction?.name}</h2>
+                    <p className="text-gray-600">ราคาสุดท้าย: {bid.amount} บาท</p>
+                    <p className="text-gray-500">ปิดประมูล: {formatBidTime(bid.auction?.expiresAt)}</p>
+                  </div>
+
+                  {status.isPaid || status.status === "approved" || status.status === "completed" ? (
+                    <button
+                      onClick={() => router.push(`/track/${bid.auction._id}`)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                      🚚 ตรวจสอบการจัดส่ง
+                    </button>
+                  ) : status.slipUploaded ? (
+                    <button
+                      disabled
+                      className="bg-yellow-400 text-white px-4 py-2 rounded cursor-not-allowed"
+                    >
+                      ⏳ รอตรวจสอบสลิป
+                    </button>
+                  ) : (
+                    <button
+                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                      onClick={() => handlePayment(bid.auction?._id)}
+                    >
+                      💳 ชำระเงิน
+                    </button>
+                  )}
+
                 </div>
-                 {/* ✅ แสดงปุ่มไปหน้าชำระเงิน */}
-                 <button 
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                  onClick={() => handlePayment(bid.auction?._id, bid.qrCode, bid.paymentId)}
-                >
-                  💳 ชำระเงิน
-                </button>                
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
-           {/* 📜 ประวัติการบิด */}
-           {activeTab === "bidHistory" && (
+        {activeTab === "bidHistory" && (
           <div className="space-y-4">
             {myBids.map((bid) => (
-              <div key={bid._id} className="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-md border border-yellow-400 hover:scale-105 transition-all ease-in-out">
-                  <img 
-                    src={bid.auction?.image?.length > 0 ? bid.auction.image[0] : '/default-image.jpg'} 
-                    alt={bid.auction?.name || "Auction Image"} 
-                    className="w-16 h-16 rounded-full object-cover border-4 border-pink-400 drop-shadow-md"
-                  />
+              <div key={bid._id} className="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-lg border border-yellow-400">
+                <img
+                  src={bid.auction?.image?.[0] || '/default-image.jpg'}
+                  className="w-16 h-16 rounded-full object-cover border-4 border-yellow-400"
+                />
                 <div className="flex-grow">
-                  <h2 className="text-xl font-bold">{bid.auction?.name || 'ไม่มีข้อมูล'}</h2>
+                  <h2 className="text-xl font-bold">{bid.auction?.name}</h2>
                   <p className="text-gray-600">ราคาที่บิด: {bid.amount} บาท</p>
                   <p className="text-gray-500">บิดเมื่อ: {formatBidTime(bid.createdAt)}</p>
                 </div>
@@ -182,53 +218,313 @@ function MyAuctionsPage() {
           </div>
         )}
 
-        {/* 🎨 ประวัติการสร้างประมูล */}
         {activeTab === "createdAuctions" && (
           <div>
-            {/* Add Create Auction Button */}
             <div className="flex justify-end mb-4">
               <button
                 onClick={() => router.push('/create-auction')}
-                className="bg-pink-500 text-white px-6 py-2 rounded-full hover:bg-pink-600 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-pink-300/50"
+                className="bg-pink-500 text-white px-6 py-2 rounded-full hover:bg-pink-600 transition-all duration-300"
               >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  strokeWidth={2} 
-                  stroke="currentColor" 
-                  className="w-5 h-5"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                สร้างการประมูลใหม่
+                ➕ สร้างการประมูลใหม่
               </button>
             </div>
-
-            {/* Existing Auctions List */}
             <div className="space-y-4">
               {myCreatedAuctions.map((auction) => (
-                <div key={auction._id} className="flex items-center gap-4 p-4 rounded-lg bg-white shadow-md border border-pink-500">
-                  <img 
-                    src={auction.image?.[0] ?? '/default-image.jpg'} 
-                    alt={auction.name ?? "Auction Image"} 
+                <div key={auction._id} className="flex items-center gap-4 p-4 rounded-lg bg-white shadow-lg border border-pink-500">
+                  <img
+                    src={auction.image?.[0] ?? '/default-image.jpg'}
+                    alt={auction.name ?? "Auction Image"}
                     className="w-12 h-12 rounded-full object-cover border-2 border-pink-500"
                   />
                   <div className="flex-grow">
                     <h2 className="text-lg font-semibold">{auction.name}</h2>
-                    <p className="text-gray-600">ราคาปัจจุบัน: {auction.currentPrice} บาท</p>
+                    <p className="text-gray-600">ราคาปัจจุบัน : {auction.currentPrice} บาท</p>
+                    {/* แสดงจำนวนครั้งที่แก้ไข */}
+                    {/* <p className="text-gray-500">
+                      จำนวนครั้งที่สามารถแก้ไขได้ : 
+                      {auction.editCount === 2 && " 2 ครั้ง"}
+                      {auction.editCount === 1 && " 1 ครั้ง"}
+                      {auction.editCount === 0 && " ไม่สามารถแก้ไขได้"}
+                    </p> */}
                   </div>
+                  {/* Edit Button with Permission Check */}
+                  {/* {auction.ownerId === currentUser?.id && auction.editCount > 0 && (
+                    <button
+                      onClick={() => openModal(auction._id)}
+                      className="bg-yellow-500 text-white px-4 py-2 rounded-full hover:bg-yellow-600 transition-all duration-300 transform hover:scale-105"
+                    >
+                      แก้ไข
+                    </button>
+                  )} */}
+
+                  {/* ✅ ปุ่มตรวจสอบการชำระเงิน */}
+                  <button
+                    onClick={() => handleCheckPayment(auction._id)}
+                    className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition-all duration-300 transform hover:scale-105"
+                  >
+                    ตรวจสอบการชำระเงิน
+                  </button>
                 </div>
+                
               ))}
             </div>
           </div>
         )}
+
+        {isModalOpen && (
+          <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+              <h3 className="text-lg font-bold mb-4">ต้องการแก้ไขการประมูลนี้หรือไม่?</h3>
+              <div className="flex justify-between">
+                <button onClick={handleConfirmEdit} className="bg-green-500 text-white px-4 py-2 rounded-full">
+                  ยืนยัน
+                </button>
+                <button onClick={closeModal} className="bg-red-500 text-white px-4 py-2 rounded-full">
+                  ยกเลิก
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
 }
 
 export default MyAuctionsPage;
+
+// 'use client';
+
+// import React, { useState, useEffect } from 'react';
+// import NavUser from '../components/NavUser';
+// import { useRouter } from 'next/navigation';
+// import { io } from 'socket.io-client';
+
+// const API_URL = "http://localhost:3111/api/v1";
+// const socket = io("http://localhost:3111");
+
+// function MyAuctionsPage() {
+//   const [activeTab, setActiveTab] = useState("winningBids");
+//   const [myBids, setMyBids] = useState([]);
+//   const [myWinningBids, setMyWinningBids] = useState([]);
+//   const [myCreatedAuctions, setMyCreatedAuctions] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const router = useRouter();
+
+//   useEffect(() => {
+//     fetchData(activeTab);
+
+//     socket.on("bid_update", (data) => {
+//       setMyBids(prev => prev.map(bid => 
+//         bid.auction?._id === data.auctionId 
+//           ? { ...bid, auction: { ...bid.auction, currentPrice: data.highestBid } }
+//           : bid
+//       ));
+//     });
+
+//     return () => {
+//       socket.off("bid_update");
+//     };
+//   }, [activeTab]);
+
+//   const fetchData = async (tab) => {
+//     setLoading(true);
+//     try {
+//       let response;
+//       if (tab === "winningBids") {
+//         response = await fetch(`${API_URL}/auction/my-winning-bids`, { credentials: 'include' });
+//       } else if (tab === "bidHistory") {
+//         response = await fetch(`${API_URL}/auction/my-bids`, { credentials: 'include' });
+//       } else if (tab === "createdAuctions") {
+//         response = await fetch(`${API_URL}/auction/my-auctions`, { credentials: 'include' });
+//       }
+//       const data = await response.json();
+//       if (data.status === 'success') {
+//         if (tab === "winningBids") setMyWinningBids(data.data || []);
+//         if (tab === "bidHistory") setMyBids(data.data || []);
+//         if (tab === "createdAuctions") setMyCreatedAuctions(data.data || []);
+//       }
+//     } catch (error) {
+//       setError('โหลดข้อมูลล้มเหลว');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // const fetchData = async (tab) => {
+//   //   setLoading(true);
+//   //   try {
+//   //     let response;
+//   //     if (tab === "winningBids") {
+//   //       response = await fetch(`${API_URL}/auction/my-winning-bids`, { credentials: 'include' });
+//   //     } else if (tab === "bidHistory") {
+//   //       response = await fetch(`${API_URL}/auction/my-bids`, { credentials: 'include' });
+//   //     } else if (tab === "createdAuctions") {
+//   //       response = await fetch(`${API_URL}/auction/my-auctions`, { credentials: 'include' });
+//   //     }
+//   //     const data = await response.json();
+//   //     if (data.status === 'success') {
+//   //       if (tab === "winningBids") setMyWinningBids(data.data || []);
+//   //       if (tab === "bidHistory") setMyBids(data.data || []);
+//   //       if (tab === "createdAuctions") setMyCreatedAuctions(data.data || []);
+//   //     }
+//   //   } catch (error) {
+//   //     setError('โหลดข้อมูลล้มเหลว');
+//   //   } finally {
+//   //     setLoading(false);
+//   //   }
+//   // };
+
+//   const formatBidTime = (time) => {
+//     return new Intl.DateTimeFormat('th-TH', {
+//       year: 'numeric', month: 'short', day: 'numeric',
+//       hour: '2-digit', minute: '2-digit'
+//     }).format(new Date(time));
+//   };
+
+//   // ✅ ฟังก์ชันไปหน้าสร้าง QR Code (สำหรับผู้ขาย)
+//   const handleCreateQR = (auctionId) => {
+//     router.push(`/upload-qr?auctionId=${auctionId}`);
+//   };
+
+//   // ✅ ฟังก์ชันไปหน้าชำระเงิน (สำหรับผู้ชนะการประมูล)
+//   const handlePayment = (auctionId, qrCode, paymentId) => {
+//     router.push(`/payment?auctionId=${auctionId}&qrCode=${encodeURIComponent(qrCode)}&paymentId=${paymentId}`);
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-pink-200 via-yellow-100 to-blue-200 text-gray-800">
+//       <NavUser />
+//       <div className="container mx-auto px-6 py-8">
+//         <h1 className="text-4xl font-extrabold text-center mb-6 text-pink-600 drop-shadow-md"style={{ fontFamily: "'Mali',sans-serif" }}>
+//           🎨 ประวัติการประมูลของฉัน 🎨
+//         </h1>
+
+//         {/* Tabs Menu */}
+//         <div className="flex justify-center space-x-4 mb-6">
+//           {["winningBids", "bidHistory", "createdAuctions"].map((tab) => (
+//             <button
+//               key={tab}
+//               onClick={() => setActiveTab(tab)}
+//               className={`px-6 py-2 rounded-full transition font-semibold text-lg drop-shadow-md ${
+//                 activeTab === tab 
+//                   ? "bg-pink-500 text-white shadow-lg shadow-pink-300/50 scale-105" 
+//                   : "bg-pink-300 text-gray-800 hover:bg-pink-400 hover:text-white"
+//               }`}
+//               style={{ fontFamily: "'Mali',sans-serif" }}
+//             >
+//               {tab === "winningBids" && "🏆 บิดที่คุณชนะ"}
+//               {tab === "bidHistory" && "📜 ประวัติการบิด"}
+//               {tab === "createdAuctions" && "🎨 ประวัติการสร้างประมูล"}
+//             </button>
+//           ))}
+//         </div>
+
+//         {/* Loading State */}
+//         {loading && (
+//           <div className="flex justify-center items-center text-gray-600">
+//             ⏳ กำลังโหลด...
+//           </div>
+//         )}
+
+//         {error && <p className="text-red-400 text-center">{error}</p>}
+
+//         {/* 🏆 บิดที่ชนะ */}
+//         {activeTab === "winningBids" && (
+//           <div className="space-y-4">
+//             {myWinningBids.map((bid) => (
+//               <div key={bid._id} className="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-md border border-pink-400 hover:scale-105 transition-all ease-in-out">
+//                   <img 
+//                     src={bid.auction?.image?.length > 0 ? bid.auction.image[0] : '/default-image.jpg'} 
+//                     alt={bid.auction?.name || "Auction Image"} 
+//                     className="w-16 h-16 rounded-full object-cover border-4 border-pink-400 drop-shadow-md"
+//                   />
+//                 <div className="flex-grow">
+//                   <h2 className="text-xl font-bold">{bid.auction?.name || 'ไม่มีข้อมูล'}</h2>
+//                   <p className="text-gray-600">ราคาสุดท้าย: {bid.amount} บาท</p>
+//                   <p className="text-gray-500">ปิดการประมูลเมื่อ: {formatBidTime(bid.auction?.expiresAt)}</p>
+//                 </div>
+//                  {/* ✅ แสดงปุ่มไปหน้าชำระเงิน */}
+//                  <button 
+//                   className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+//                   onClick={() => handlePayment(bid.auction?._id, bid.qrCode, bid.paymentId)}
+//                 >
+//                   💳 ชำระเงิน
+//                 </button>                
+//               </div>
+//             ))}
+//           </div>
+//         )}
+
+//            {/* 📜 ประวัติการบิด */}
+//            {activeTab === "bidHistory" && (
+//           <div className="space-y-4">
+//             {myBids.map((bid) => (
+//               <div key={bid._id} className="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-md border border-yellow-400 hover:scale-105 transition-all ease-in-out">
+//                   <img 
+//                     src={bid.auction?.image?.length > 0 ? bid.auction.image[0] : '/default-image.jpg'} 
+//                     alt={bid.auction?.name || "Auction Image"} 
+//                     className="w-16 h-16 rounded-full object-cover border-4 border-pink-400 drop-shadow-md"
+//                   />
+//                 <div className="flex-grow">
+//                   <h2 className="text-xl font-bold">{bid.auction?.name || 'ไม่มีข้อมูล'}</h2>
+//                   <p className="text-gray-600">ราคาที่บิด: {bid.amount} บาท</p>
+//                   <p className="text-gray-500">บิดเมื่อ: {formatBidTime(bid.createdAt)}</p>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         )}
+
+//         {/* 🎨 ประวัติการสร้างประมูล */}
+//         {activeTab === "createdAuctions" && (
+//           <div>
+//             {/* Add Create Auction Button */}
+//             <div className="flex justify-end mb-4">
+//               <button
+//                 onClick={() => router.push('/create-auction')}
+//                 className="bg-pink-500 text-white px-6 py-2 rounded-full hover:bg-pink-600 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-pink-300/50"
+//               >
+//                 <svg 
+//                   xmlns="http://www.w3.org/2000/svg" 
+//                   fill="none" 
+//                   viewBox="0 0 24 24" 
+//                   strokeWidth={2} 
+//                   stroke="currentColor" 
+//                   className="w-5 h-5"
+//                 >
+//                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+//                 </svg>
+//                 สร้างการประมูลใหม่
+//               </button>
+//             </div>
+
+//             {/* Existing Auctions List */}
+//             <div className="space-y-4">
+//               {myCreatedAuctions.map((auction) => (
+//                 <div key={auction._id} className="flex items-center gap-4 p-4 rounded-lg bg-white shadow-md border border-pink-500">
+//                   <img 
+//                     src={auction.image?.[0] ?? '/default-image.jpg'} 
+//                     alt={auction.name ?? "Auction Image"} 
+//                     className="w-12 h-12 rounded-full object-cover border-2 border-pink-500"
+//                   />
+//                   <div className="flex-grow">
+//                     <h2 className="text-lg font-semibold">{auction.name}</h2>
+//                     <p className="text-gray-600">ราคาปัจจุบัน: {auction.currentPrice} บาท</p>
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default MyAuctionsPage;
 
 // 'use client';
 

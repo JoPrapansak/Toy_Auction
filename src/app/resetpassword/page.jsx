@@ -35,14 +35,21 @@ export default function ResetPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
+    if (password !== confirmPassword) {
+      setMessage("❌ รหัสผ่านไม่ตรงกัน");
+      return;
+    }
+  
     if (!token || token === "undefined" || token === "null") {
       setMessage("❌ ไม่พบ Token กรุณาลองใหม่");
       return;
     }
   
     try {
+      setLoading(true); // ตั้ง loading ก่อนเรียก API
+  
       const response = await axios.post("http://localhost:3111/api/v1/accounts/reset-password", {
-        token, // ✅ ส่ง Token ไปที่ API
+        token,
         newPassword: password,
       });
   
@@ -52,8 +59,11 @@ export default function ResetPassword() {
       }, 3000);
     } catch (err) {
       setMessage("❌ " + (err.response?.data?.message || "เกิดข้อผิดพลาด"));
+    } finally {
+      setLoading(false); // ปิด loading หลังเรียกเสร็จไม่ว่าจะสำเร็จหรือไม่
     }
   };
+  
   
 
   return (
@@ -90,10 +100,9 @@ export default function ResetPassword() {
             required
             className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
           />
-
-          <p className="text-sm">
-            ความแข็งแรงของรหัสผ่าน: {["❌ อ่อน", "⚠️ พอใช้", "✅ แข็งแรง"][passwordStrength]}
-          </p>
+          {confirmPassword && password !== confirmPassword && (
+            <p className="text-red-500 text-sm">❗ รหัสผ่านไม่ตรงกัน</p>
+          )}
 
           {loading && <p className="text-center text-blue-500">⏳ กำลังเปลี่ยนรหัสผ่าน...</p>}
 
@@ -109,7 +118,7 @@ export default function ResetPassword() {
         </form>
 
         <button
-          onClick={() => router.push("/login")} // ✅ ใช้ router.push() แทน navigate()
+          onClick={() => router.push("/login")}
           className="w-full mt-4 py-2 text-blue-500 font-semibold hover:underline"
         >
           🔑 กลับไปหน้า Login
@@ -118,6 +127,132 @@ export default function ResetPassword() {
     </div>
   );
 }
+
+// "use client";
+
+// import { useState, useEffect } from "react";
+// import { useSearchParams, useRouter } from "next/navigation"; // ✅ ใช้ next/navigation
+// import axios from "axios";
+// import zxcvbn from "zxcvbn"; // ✅ เพิ่ม import ที่หายไป
+
+// export default function ResetPassword() {
+//   const searchParams = useSearchParams(); // ✅ แก้ไข ไม่ใช้ destructuring
+//   const token = searchParams.get("token"); // ✅ ใช้ searchParams ตรงๆ
+//   const router = useRouter(); // ✅ ใช้ useRouter() แทน useNavigate()
+
+//   useEffect(() => {
+//     console.log("Token received:", token);
+
+//     if (!token || token === "undefined" || token === "null") {
+//       console.error("Invalid token detected. Redirecting...");
+//       router.push("/forgot-password"); // ✅ ใช้ router.push() แทน navigate()
+//     }
+//   }, [token, router]);
+
+//   const [password, setPassword] = useState("");
+//   const [confirmPassword, setConfirmPassword] = useState("");
+//   const [message, setMessage] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [passwordStrength, setPasswordStrength] = useState(0);
+
+//   const handlePasswordChange = (e) => {
+//     const value = e.target.value;
+//     setPassword(value);
+//     setPasswordStrength(zxcvbn(value).score);
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     // ตรวจสอบว่ารหัสผ่านตรงกันหรือไม่
+//     if (password !== confirmPassword) {
+//       setMessage("❌ รหัสผ่านไม่ตรงกัน กรุณาลองใหม่");
+//       return;
+//     }
+
+//     if (!token || token === "undefined" || token === "null") {
+//       setMessage("❌ ไม่พบ Token กรุณาลองใหม่");
+//       return;
+//     }
+
+//     try {
+//       const response = await axios.post("http://localhost:3111/api/v1/accounts/reset-password", {
+//         token, // ✅ ส่ง Token ไปที่ API
+//         newPassword: password,
+//       });
+
+//       setMessage("✅ รหัสผ่านถูกเปลี่ยนแล้ว กรุณาเข้าสู่ระบบใหม่");
+//       setTimeout(() => {
+//         router.push("/login");
+//       }, 3000);
+//     } catch (err) {
+//       setMessage("❌ " + (err.response?.data?.message || "เกิดข้อผิดพลาด"));
+//     }
+//   };
+
+//   return (
+//     <div className="flex items-center justify-center min-h-screen bg-gray-100">
+//       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+//         <h2 className="text-2xl font-semibold text-center mb-4">🔒 ตั้งรหัสผ่านใหม่</h2>
+
+//         {message && <p className="text-center mb-4 text-red-600">{message}</p>}
+
+//         <form onSubmit={handleSubmit} className="space-y-4">
+//           <div className="relative">
+//             <input
+//               type={showPassword ? "text" : "password"}
+//               placeholder="รหัสผ่านใหม่"
+//               value={password}
+//               onChange={handlePasswordChange}
+//               required
+//               className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+//             />
+//             <button
+//               type="button"
+//               onClick={() => setShowPassword(!showPassword)}
+//               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+//             >
+//               {showPassword ? "👁" : "👁‍🗨"}
+//             </button>
+//           </div>
+
+//           <input
+//             type="password"
+//             placeholder="ยืนยันรหัสผ่าน"
+//             value={confirmPassword}
+//             onChange={(e) => setConfirmPassword(e.target.value)}
+//             required
+//             className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+//           />
+
+//           <p className="text-sm">
+//             ความแข็งแรงของรหัสผ่าน: {["❌ อ่อน", "⚠️ พอใช้", "✅ แข็งแรง"][passwordStrength]}
+//           </p>
+
+//           {loading && <p className="text-center text-blue-500">⏳ กำลังเปลี่ยนรหัสผ่าน...</p>}
+
+//           <button
+//             type="submit"
+//             className={`w-full py-2 text-white font-semibold rounded-md transition ${
+//               loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+//             }`}
+//             disabled={loading}
+//           >
+//             {loading ? "⏳ กำลังโหลด..." : "บันทึกรหัสผ่าน"}
+//           </button>
+//         </form>
+
+//         <button
+//           onClick={() => router.push("/login")} // ✅ ใช้ router.push() แทน navigate()
+//           className="w-full mt-4 py-2 text-blue-500 font-semibold hover:underline"
+//         >
+//           🔑 กลับไปหน้า Login
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
 
 // 'use client'
 

@@ -130,7 +130,7 @@ function CreateAuctionPage() {
             )}
 
             <Input label="ชื่อสินค้า" type="text" name="name" value={formData.name} onChange={handleChange} required />
-            {/* อัปโหลดรูปภาพ */}
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">รูปภาพสินค้า (สูงสุด 5 รูป)</label>
               <input type="file" multiple onChange={handleImageChange} accept="image/*" className="w-full p-2 border rounded-lg" />
@@ -143,7 +143,7 @@ function CreateAuctionPage() {
                 ))}
               </div>
             </div>
-            {/* หมวดหมู่สินค้า */}
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">หมวดหมู่สินค้า</label>
               <select name="category" value={formData.category} onChange={handleChange} className="w-full p-2 border rounded-lg">

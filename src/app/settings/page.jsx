@@ -161,7 +161,7 @@ function SettingPage() {
                   >
                     {tab === 'password' && 'เปลี่ยนรหัสผ่าน'}
                     {/* {tab === 'location' && 'ตำแหน่งที่คุณเข้าระบบ'} */}
-                    {tab === 'loginHistory' && 'ประวัติการเข้าสู่ระบบ'}
+                    {/* {tab === 'loginHistory' && 'ประวัติการเข้าสู่ระบบ'} */}
                   </button>
                 ))}
               </div>

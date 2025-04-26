@@ -20,7 +20,9 @@ function HomePage() {
       <div className='container mx-auto px-4 mb-16'>
         <Product/>
       </div>
-      <NavContact/>
+      <div className="mt-auto">
+        <NavContact/>
+      </div>
     </div>
   )
 }

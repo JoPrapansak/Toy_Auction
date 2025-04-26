@@ -123,30 +123,6 @@ function ProductPage() {
                         alt={product.name}
                         className="w-full h-full object-cover"
                       />
-
-                      {/* ปุ่มเปลี่ยนรูป */}
-                      {/* {images.length > 1 && (
-                        <>
-                          <button
-                            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white p-2 rounded-full"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              prevImage(product._id, images);
-                            }}
-                          >
-                            ◀
-                          </button>
-                          <button
-                            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white p-2 rounded-full"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              nextImage(product._id, images);
-                            }}
-                          >
-                            ▶
-                          </button>
-                        </>
-                      )} */}
                     </div>
                   </a>
                 </Link>
@@ -154,17 +130,18 @@ function ProductPage() {
                 {/* ✅ ข้อมูลสินค้า */}
                 <div className="mt-2">
                   <h2 className="text-lg font-semibold">{product.name}</h2>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-black">
                     ราคา: <span className="font-semibold">{product.currentPrice} บาท</span>
                   </p>
+                  <p className="text-md text-red-500 font-semibold">{timeLeft[product._id] || "กำลังโหลด..."}</p>
                 </div>
 
                 {/* ✅ แสดงเวลาที่เหลือ */}
-                <div className="flex justify-between mt-2">
+                {/* <div className="flex justify-between mt-2">
                   <h3 className="text-lg font-semibold text-red-500">
                     {timeLeft[product._id] || "กำลังโหลด..."}
                   </h3>
-                </div>
+                </div> */}
               </div>
             );
           })}

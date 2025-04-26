@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // เปลี่ยนจาก next/router เป็น next/navigation
+import { useRouter } from 'next/navigation';
 import Frame1 from '../images/1.jpg';
 import Frame2 from '../images/2.jpg';
 import Frame3 from '../images/3.jpg';

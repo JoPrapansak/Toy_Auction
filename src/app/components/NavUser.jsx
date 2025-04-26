@@ -96,7 +96,7 @@ function NavUser() {
     const fetchProfile = async () => {
       try {
         const res = await fetch(`${API_URL}/profile`, { credentials: 'include' });
-        if (!res.ok) throw new Error("ไม่สามารถโหลดข้อมูลโปรไฟล์");
+        // if (!res.ok) throw new Error("ไม่สามารถโหลดข้อมูลโปรไฟล์");
         const data = await res.json();
         setProfile(data.data);
       } catch (err) {
@@ -112,7 +112,7 @@ function NavUser() {
     const fetchProfileImage = async () => {
       try {
         const res = await fetch(`${API_URL}/profile/image`, { credentials: 'include' });
-        if (!res.ok) throw new Error("โหลดรูปภาพไม่สำเร็จ");
+        // if (!res.ok) throw new Error("โหลดรูปภาพไม่สำเร็จ");
         const data = await res.json();
         setProfileImage(data.image);
       } catch (err) {
@@ -120,7 +120,7 @@ function NavUser() {
       }
     };
 
-    
+
     fetchProfile();
     fetchProfileImage();
     document.addEventListener("mousedown", handleClickOutside);
@@ -211,166 +211,136 @@ function NavUser() {
   return (
 
     <div>
-      {/* <nav className="bg-[#FFA6D4] text-white py-3">
-        <div className="container mx-auto flex justify-between items-center">
-          <Link href="/" className="text-3xl font-cute font-semibold">
-            Toy Auction
-          </Link>
-          <div className="flex items-center">
-            <input
-              type="text"
-              placeholder="ค้นหาสินค้า"
-              className="w-72 p-2 rounded text-black"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-            <button 
-              onClick={fetchSearchResults} 
-              className="p-2 bg-white text-[#FFA6D4] rounded"
-            >
-              ค้นหา
-            </button>
-          </div>
-        </div>
-      </nav>     */}
-
       <nav className="bg-[#FFA6D4] text-white py-3">
+      <div className="container mx-auto">
+        <div className='flex justify-between items-center'>
 
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="text-3xl font-cute font-semibold me-9 cursor-pointer" onClick={() => router.push('/homeuser')}>Toy Auction</div>
-          <div className="relative">
-            <input
-              type="text"
-              style={{ fontFamily: "'Mali',sans-serif"}}
-              placeholder="ค้นหาสินค้า"
-              className="w-72 p-2 rounded text-black"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-            {hasSearched && (
-              <div ref={dropdownRef} className="absolute w-72 bg-white shadow-lg rounded-lg mt-2 z-10">
-                {searchResults.length > 0 ? (
-                  <ul>
-                    {searchResults.map((item) => (
-                      <li key={item._id} className="p-2 border-b flex items-center cursor-pointer hover:bg-gray-100 transition">
-                        <img
-                          src={item.image?.length > 0 ? item.image[0] : "/default-image.jpg"}
-                          alt={item.name}
-                          className="w-10 h-10 mr-3 rounded border"
-                          onError={(e) => e.target.src = "/default-image.jpg"}
-                        />
-                        <Link href={`/productdetails/${item._id}`} className="flex-1 text-gray-700 hover:text-[#FFA6D4]">
-                          {item.name} - ราคา: {item.currentPrice} บาท
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-gray-500 p-2 text-center">❌ ไม่พบสินค้าที่ตรงกับ "{searchText}"</p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* เมนูนำทาง
-          <ul className="flex items-center space-x-6">
-            <li><Link href="/categories">หมวดหมู่</Link></li>
-            <li><Link href="/homeuser">หน้าหลัก</Link></li>
-            <li><Link href="/productuser">สินค้าประมูล</Link></li>
-            <li><Link href="/winner">ประกาศผู้ชนะ</Link></li>
-            <li><Link href="/contacts">ติดต่อเรา</Link></li>
-          </ul> */}
-
-          {/* โปรไฟล์และการแจ้งเตือน */}
-          <ul className='flex items-center'>
-            <div className="flex items-center space-x-4">
-              {/* โปรไฟล์ */}
-              <div className="relative flex items-center" ref={dropdownRef}>
-                <button
-                onClick={() => setDropdownOpen(!dropdownOpen)} 
-                className="flex items-center focus:outline-none hover:opacity-80">
-                  {profileImage ? (
-                    <img 
-                    src={profileImage} 
-                    alt="Profile" 
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-white" />
+          <div className="flex-1 flex justify-center items-center">
+            <div className="text-3xl font-cute font-semibold me-9" style={{ fontFamily: "'Mali',sans-serif"}}><Link href="/homeuser">Toy Auction</Link> </div>
+              <input
+                type="text"
+                style={{ fontFamily: "'Mali',sans-serif"}}
+                placeholder="ค้นหาสินค้า"
+                className="w-1/3 p-2 rounded text-black"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
+              {hasSearched && (
+                <div ref={dropdownRef} className="absolute w-72 bg-white shadow-lg rounded-lg mt-2 z-10">
+                  {searchResults.length > 0 ? (
+                    <ul>
+                      {searchResults.map((item) => (
+                        <li key={item._id} className="p-2 border-b flex items-center cursor-pointer hover:bg-gray-100 transition">
+                          <img
+                            src={item.image?.length > 0 ? item.image[0] : "/default-image.jpg"}
+                            alt={item.name}
+                            className="w-10 h-10 mr-3 rounded border"
+                            onError={(e) => e.target.src = "/default-image.jpg"}
+                          />
+                          <Link href={`/productdetails/${item._id}`} className="flex-1 text-gray-700 hover:text-[#FFA6D4]">
+                            {item.name} - ราคา: {item.currentPrice} บาท
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                      </svg>
-                    </div>
+                    <p className="text-gray-500 p-2 text-center">❌ ไม่พบสินค้าที่ตรงกับ "{searchText}"</p>
                   )}
-                </button>
-                <span className="text-base font-medium ml-2">{profile?.name || 'ไม่ระบุ'}</span>
-                  {dropdownOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50"style={{ fontFamily: "'Mali',sans-serif"}}>
-                      <Link href="profile" legacyBehavior>
-                        <a className="block px-4 py-2 text-black hover:bg-gray-400 hover:text-white rounded-lg">Profile</a>
-                      </Link>
-                      <Link href="/my-auctions" legacyBehavior>
-                        <a className="block px-4 py-2 text-black hover:bg-gray-400 hover:text-white rounded-lg">MyAuction</a>
-                      </Link>
-                      <Link href="/settings" legacyBehavior>
-                        <a className="block px-4 py-2 text-black hover:bg-gray-400 hover:text-white rounded-lg">Settings</a>
-                      </Link>
-                      <a onClick={handleLogout} className="block px-4 py-2 text-gray-800 hover:bg-red-600 hover:text-white rounded-lg cursor-pointer">
-                        Logout
-                      </a>
-                    </div>
-                  )}
-              </div>
-
-              {/* การแจ้งเตือน */}
-              <div className="relative flex items-center" ref={notificationRef}>
-                <button className="relative hover:text-gray-200" onClick={() => setNotificationOpen(!notificationOpen)}>
-                  <FaBell className="w-8 h-8" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {unreadCount}
-                    </span>
-                  )}
-                </button>
-
-                {/* Dropdown แจ้งเตือน */}
-                {notificationOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                    <div className="p-4 border-b border-gray-200 flex justify-between">
-                      <h3 className="text-lg font-semibold text-gray-800">การแจ้งเตือน</h3>
-                      <button onClick={markAllAsRead} className="text-blue-600 text-sm">อ่านทั้งหมด</button>
-                    </div>
-                    <div className="divide-y divide-gray-200 max-h-80 overflow-y-auto">
-                      {notifications.length === 0 ? (
-                        <p className="text-center text-gray-500 p-4">ไม่มีการแจ้งเตือน</p>
-                      ) : (
-                        notifications.map((notification, index) => (
-                          <div key={notification.id || index} className="p-4 hover:bg-gray-50 cursor-pointer">
-                            <div className="flex items-start">
-                              <div className="flex-shrink-0">
-                                {notification.type === 'time_warning' ? (
-                                  <FaClock className="h-6 w-6 text-purple-500" />
-                                ) : notification.type === 'auction_end' ? (
-                                  <FaCheckCircle className="h-6 w-6 text-green-500" />
-                                ) : (
-                                  <FaInfo className="h-6 w-6 text-blue-500" />
-                                )}
-                              </div>
-                              <div className="ml-3">
-                                <p className="text-sm text-gray-800">{notification.message}</p>
-                                <p className="text-xs text-gray-500 mt-1">{new Date(notification.timestamp).toLocaleTimeString()}</p>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
+                </div>
+              )}
             </div>
 
-          </ul>
+            {/* โปรไฟล์และการแจ้งเตือน */}
+            <ul className='flex items-center'>
+              <div className="flex items-center space-x-4">
+                {/* โปรไฟล์ */}
+                <div className="relative flex items-center" ref={dropdownRef}>
+                  <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)} 
+                  className="flex items-center focus:outline-none hover:opacity-80">
+                    {profileImage ? (
+                      <img 
+                      src={profileImage} 
+                      alt="Profile" 
+                      className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-white" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                      </div>
+                    )}
+                  </button>
+                  <span className="text-base font-medium ml-2">{profile?.name || 'ไม่ระบุ'}</span>
+                    {dropdownOpen && (
+                      <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50"style={{ fontFamily: "'Mali',sans-serif"}}>
+                        <Link href="profile" legacyBehavior>
+                          <a className="block px-4 py-2 text-black hover:bg-gray-400 hover:text-white rounded-lg">Profile</a>
+                        </Link>
+                        <Link href="/my-auctions" legacyBehavior>
+                          <a className="block px-4 py-2 text-black hover:bg-gray-400 hover:text-white rounded-lg">MyAuction</a>
+                        </Link>
+                        <Link href="/settings" legacyBehavior>
+                          <a className="block px-4 py-2 text-black hover:bg-gray-400 hover:text-white rounded-lg">Settings</a>
+                        </Link>
+                        <a onClick={handleLogout} className="block px-4 py-2 text-gray-800 hover:bg-red-600 hover:text-white rounded-lg cursor-pointer">
+                          Logout
+                        </a>
+                      </div>
+                    )}
+                </div>
+
+                {/* การแจ้งเตือน */}
+                <div className="relative flex items-center" ref={notificationRef}>
+                  <button className="relative hover:text-gray-200" onClick={() => setNotificationOpen(!notificationOpen)}>
+                    <FaBell className="w-8 h-8" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Dropdown แจ้งเตือน */}
+                  {notificationOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                      <div className="p-4 border-b border-gray-200 flex justify-between">
+                        <h3 className="text-lg font-semibold text-gray-800">การแจ้งเตือน</h3>
+                        <button onClick={markAllAsRead} className="text-blue-600 text-sm">อ่านทั้งหมด</button>
+                      </div>
+                      <div className="divide-y divide-gray-200 max-h-80 overflow-y-auto">
+                        {notifications.length === 0 ? (
+                          <p className="text-center text-gray-500 p-4">ไม่มีการแจ้งเตือน</p>
+                        ) : (
+                          notifications.map((notification, index) => (
+                            <div key={notification.id || index} className="p-4 hover:bg-gray-50 cursor-pointer">
+                              <div className="flex items-start">
+                                <div className="flex-shrink-0">
+                                  {notification.type === 'time_warning' ? (
+                                    <FaClock className="h-6 w-6 text-purple-500" />
+                                  ) : notification.type === 'auction_end' ? (
+                                    <FaCheckCircle className="h-6 w-6 text-green-500" />
+                                  ) : (
+                                    <FaInfo className="h-6 w-6 text-blue-500" />
+                                  )}
+                                </div>
+                                <div className="ml-3">
+                                  <p className="text-sm text-gray-800">{notification.message}</p>
+                                  <p className="text-xs text-gray-500 mt-1">{new Date(notification.timestamp).toLocaleTimeString()}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+              </div>
+
+            </ul>
+        </div>
         </div>
       </nav>
       <nav className='bg-[#FFA6D4] text-white py-3'style={{ fontFamily: "'Mali',sans-serif"}}>
@@ -534,7 +504,7 @@ export default NavUser;
 //     }
 //   };
 //     const [searchText, setSearchText] = React.useState("")
-  
+
 //   useEffect(() => {
 //     const fetchNotifications = async () => {
 //       try {

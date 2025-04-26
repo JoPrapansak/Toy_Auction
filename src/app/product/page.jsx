@@ -14,12 +14,14 @@ import NavContact from '../components/NavContact';
 
 function product() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-yellow-100 to-blue-200">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-200 via-yellow-100 to-blue-200">
       <Navbar/>
       <div className='container mx-auto px-4 mb-16'>  
         <Product/>
       </div>
-      <NavContact/>
+      <div className="mt-auto">
+        <NavContact/>
+      </div>
     </div>
   )
 }

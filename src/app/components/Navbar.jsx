@@ -1,31 +1,82 @@
 'use client'
 
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link';
 
+const API_URL = "http://localhost:3111/api/v1";
+
+const categories = [
+  { key: "designer_toys", name: "Designer Toys" },
+  { key: "vinyl_figures", name: "Vinyl Figures" },
+  { key: "resin_figures", name: "Resin Figures" },
+  { key: "blind_box", name: "Blind Box Toys" },
+  { key: "anime_figures", name: "Anime Figures" },
+  { key: "movie_game_collectibles", name: "Movie & Game Collectibles" },
+  { key: "robot_mecha", name: "Robot & Mecha Toys" },
+  { key: "soft_vinyl", name: "Soft Vinyl (Sofubi)" },
+  { key: "kaiju_monsters", name: "Kaiju & Monsters" },
+  { key: "diy_custom", name: "DIY & Custom Toys" },
+  { key: "retro_vintage", name: "Retro & Vintage Toys" },
+  { key: "limited_edition", name: "Limited Edition & Exclusive" },
+  { key: "gunpla_models", name: "Gunpla & Mecha Models" },
+  { key: "plastic_models", name: "Plastic Model Kits" }
+];
 
 function Navbar() {
+    // const [searchText, setSearchText] = React.useState("")
+  const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+  const [isDropdownOpen, toggleDropdown] = useState(false);
+  const dropdownContainerRef = useRef(null);
 
-  // const handleLogout = async () => {
-  //   try {
-  //     const res = await fetch('http://localhost:3111/api/v1/auth/logout', {
-  //       method: 'POST',
-  //       credentials: 'include', // ส่ง cookies ไปกับ request
-  //     });
 
-  //     if (res.status === 200) {
-  //       console.log('Logged out successfully');
-  //       // ลบ session หรือรีเฟรชหน้า
-  //       window.location.href = '/';
-  //     } else {
-  //       console.error('Failed to log out:', res.status);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error logging out:', error);
-  //   }
-  // };
-    const [searchText, setSearchText] = React.useState("")
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownContainerRef.current && !dropdownContainerRef.current.contains(event.target)) {
+        toggleDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  
+  useEffect(() => {
+    if (searchText.trim() === "") {
+      setSearchResults([]);
+      setHasSearched(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      fetchSearchResults();
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchText]);
+
+  const fetchSearchResults = async () => {
+    try {
+      const response = await fetch(`${API_URL}/auction/search?name=${encodeURIComponent(searchText)}`);
+      const data = await response.json();
+
+      if (data.status === "success") {
+        setSearchResults(data.data);
+      } else {
+        setSearchResults([]);
+      }
+      setHasSearched(true);
+    } catch (error) {
+      console.error("❌ เกิดข้อผิดพลาดในการค้นหา:", error);
+      setSearchResults([]);
+      setHasSearched(true);
+    }
+  };
+
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef(null)
   return (
     <div>
       <nav className="bg-[#FFA6D4] text-white py-3">
@@ -33,8 +84,7 @@ function Navbar() {
           <div className='flex justify-between items-center'>
             <div className="flex-1 flex justify-center items-center">
               {/*แก้ไขส่วนที่ระยะ และตัวอักษร*/}
-              <div className="text-3xl font-cute font-semibold me-9">
-                Toy Auction
+              <div className="text-3xl font-cute font-semibold me-9"style={{ fontFamily: "'Mali',sans-serif"}}><Link href="/">Toy Auction</Link>
               </div>
               {/*เพิ่มตามนี้เลยนะ ส่วนinput เวลาเราพิมมันไม่เห็นอะไรเลยแก้แล้ว*/}
                 <input
@@ -45,6 +95,29 @@ function Navbar() {
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                 />
+              {hasSearched && (
+                <div ref={dropdownRef} className="absolute w-72 bg-white shadow-lg rounded-lg mt-2 z-10">
+                  {searchResults.length > 0 ? (
+                    <ul>
+                      {searchResults.map((item) => (
+                        <li key={item._id} className="p-2 border-b flex items-center cursor-pointer hover:bg-gray-100 transition">
+                          <img
+                            src={item.image?.length > 0 ? item.image[0] : "/default-image.jpg"}
+                            alt={item.name}
+                            className="w-10 h-10 mr-3 rounded border"
+                            onError={(e) => e.target.src = "/default-image.jpg"}
+                          />
+                          <Link href={`/productdetails/${item._id}`} className="flex-1 text-gray-700 hover:text-[#FFA6D4]">
+                            {item.name} - ราคา: {item.currentPrice} บาท
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500 p-2 text-center">❌ ไม่พบสินค้าที่ตรงกับ "{searchText}"</p>
+                  )}
+                </div>
+              )}
             </div>
             <ul className='flex'  style={{ fontFamily: "'Mali',sans-serif"}}>
               <li className='ms-3'><Link href="/register">สมัครสมาชิก</Link></li>
@@ -69,8 +142,32 @@ function Navbar() {
             <ul className='flex space-x-10'>
               {/*เราแก้ภาษาตรงนี้*/}
               <li className='ms-3'><Link href="/">หน้าหลัก</Link></li>
+              <div className="relative" ref={dropdownContainerRef}>
+                <button
+                  className="hover:text-gray-200 focus:outline-none"
+                  onClick={() => toggleDropdown(!isDropdownOpen)}
+                  >
+                  หมวดหมู่ ▼
+                  </button>
+                  {isDropdownOpen && (
+                  <div className="absolute top-full mt-2 bg-white text-gray-800 border border-gray-300 shadow-lg rounded-lg w-64 z-10">
+                  {categories.map((category) => (
+                    <button
+                      key={category.key}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      onClick={() => {
+                      router.push(`/categories?category=${category.key}`);
+                      toggleDropdown(false);
+                      }}
+                    >
+                      {category.name}
+                    </button>
+                 ))}
+                </div>
+              )}
+            </div>
               <li className='ms-3'><Link href="/product">สินค้าประมูล</Link></li>
-              <li className='ms-3'><Link href="/winner">ประกาศผู้ชนะ</Link></li>
+              <li className='ms-3'><Link href="/winer">ประกาศผู้ชนะ</Link></li>
               <li className='ms-3'><Link href="/contact">ติดต่อ</Link></li>
             </ul>
           </div>

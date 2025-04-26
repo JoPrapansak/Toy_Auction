@@ -9,6 +9,7 @@ function ProductPage() {
   const [error, setError] = useState(null)
   const [timeLeft, setTimeLeft] = useState({})
 
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -24,27 +25,24 @@ function ProductPage() {
     
         const data = await response.json()
 
-        // ✅ กรองเฉพาะสินค้าที่กำลังเปิดประมูล
-        const activeProducts = data.data.filter(product => product.status === "active")
-        setProducts(activeProducts)
+        // ✅ แสดงสินค้าทุกสถานะ (ไม่กรองเฉพาะ active)
+        setProducts(data.data)
 
-        // ✅ เริ่มต้นคำนวณเวลาคงเหลือ
         const initialTimeLeft = {}
-        activeProducts.forEach(product => {
+        data.data.forEach(product => {
           initialTimeLeft[product._id] = calculateTimeLeft(product.expiresAt)
         })
         setTimeLeft(initialTimeLeft)
 
-        // ✅ ใช้ `setInterval` ให้นับเวลาถอยหลังทุกวินาที
         const interval = setInterval(() => {
           const updatedTimeLeft = {}
-          activeProducts.forEach(product => {
+          data.data.forEach(product => {
             updatedTimeLeft[product._id] = calculateTimeLeft(product.expiresAt)
           })
           setTimeLeft(updatedTimeLeft)
         }, 1000)
 
-        return () => clearInterval(interval) // เคลียร์ `setInterval` เมื่อ Component Unmount
+        return () => clearInterval(interval)
       } catch (err) {
         setError(err.message)
       } finally {
@@ -55,7 +53,6 @@ function ProductPage() {
     fetchProducts()
   }, [])
 
-  // 📌 ฟังก์ชันคำนวณเวลาคงเหลือ
   const calculateTimeLeft = (expiresAt) => {
     const endTime = new Date(expiresAt).getTime()
     const now = new Date().getTime()
@@ -69,6 +66,66 @@ function ProductPage() {
 
     return `${hours}:${minutes}:${seconds}`
   }
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     try {
+  //       const response = await fetch("http://localhost:3111/api/v1/auction", {
+  //         method: "GET",
+  //         headers: { "Content-Type": "application/json" },
+  //         credentials: "include",
+  //       })
+    
+  //       if (!response.ok) {
+  //         throw new Error("ไม่สามารถดึงข้อมูลสินค้าได้")
+  //       }
+    
+  //       const data = await response.json()
+
+  //       // ✅ กรองเฉพาะสินค้าที่กำลังเปิดประมูล
+  //       const activeProducts = data.data.filter(product => product.status === "active")
+  //       setProducts(activeProducts)
+
+  //       // ✅ เริ่มต้นคำนวณเวลาคงเหลือ
+  //       const initialTimeLeft = {}
+  //       activeProducts.forEach(product => {
+  //         initialTimeLeft[product._id] = calculateTimeLeft(product.expiresAt)
+  //       })
+  //       setTimeLeft(initialTimeLeft)
+
+  //       // ✅ ใช้ `setInterval` ให้นับเวลาถอยหลังทุกวินาที
+  //       const interval = setInterval(() => {
+  //         const updatedTimeLeft = {}
+  //         activeProducts.forEach(product => {
+  //           updatedTimeLeft[product._id] = calculateTimeLeft(product.expiresAt)
+  //         })
+  //         setTimeLeft(updatedTimeLeft)
+  //       }, 1000)
+
+  //       return () => clearInterval(interval) // เคลียร์ `setInterval` เมื่อ Component Unmount
+  //     } catch (err) {
+  //       setError(err.message)
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
+
+  //   fetchProducts()
+  // }, [])
+
+  // // 📌 ฟังก์ชันคำนวณเวลาคงเหลือ
+  // const calculateTimeLeft = (expiresAt) => {
+  //   const endTime = new Date(expiresAt).getTime()
+  //   const now = new Date().getTime()
+  //   const diff = endTime - now
+
+  //   if (diff <= 0) return "หมดเวลา"
+
+  //   const hours = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0')
+  //   const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0')
+  //   const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0')
+
+  //   return `${hours}:${minutes}:${seconds}`
+  // }
 
   if (loading) return <div className="text-center py-8">กำลังโหลด...</div>
   if (error) return <div className="text-center py-8 text-red-500">{error}</div>
@@ -78,7 +135,7 @@ function ProductPage() {
       <h3 className="text-2xl my-3"style={{ fontFamily: "'Mali',sans-serif"}}>ประมูลสินค้า</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
         {products.map((product) => (
-          <div key={product._id} className="bg-white p-4 shadow-md rounded-md">
+          <div key={product._id} className="bg-white p-4 shadow-md rounded-md relative">
             <Link
               href={{
                 pathname: '/productdetails',
@@ -95,21 +152,22 @@ function ProductPage() {
               legacyBehavior
             >
               <a>
-                <img 
-                  src={Array.isArray(product.image) ? product.image[0] : product.image} 
-                  alt={product.name} 
-                  className="w-full h-auto mb-4 rounded-lg cursor-pointer"
-                />
+                <div className="relative w-full h-60 overflow-hidden rounded-lg">
+                  <img 
+                    src={Array.isArray(product.image) ? product.image[0] : product.image} 
+                    alt={product.name} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </a>
             </Link>
-            <div className="mb-2">
-              <h2 className="text-lg font-semibold">{product.name}</h2>
-            </div>
-            <div className="flex justify-between">
-              {/* <p className="text-md text-black">ราคาเริ่มต้น: <span className="font-semibold">{product.startingPrice} บาท</span></p> */}
-              <p className="text-md text-black">ราคา: <span className="font-semibold">{product.currentPrice} บาท</span></p>
-              <p className="text-md text-red-500 font-semibold">{timeLeft[product._id] || "กำลังโหลด..."}</p>
-            </div>
+            <div className="mt-2">
+                <h2 className="text-lg font-semibold">{product.name}</h2>
+                <p className="text-sm text-black">
+                  ราคา: <span className="font-semibold">{product.currentPrice} บาท</span>
+                </p>
+                <p className="text-md text-red-500 font-semibold">{timeLeft[product._id] || "กำลังโหลด..."}</p>
+              </div>
           </div>
         ))}
       </div>
